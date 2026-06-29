@@ -191,29 +191,29 @@ body{
    TAB 1: RANKING — ultra-compact table
 ════════════════════════════════════════════════════ */
 .rank-list{padding:0;margin-top:0}
-.rank-tbl{width:100%;border-collapse:collapse;font-size:12px;table-layout:auto}
+.rank-tbl{width:100%;border-collapse:collapse;font-size:11px}
 .rank-tbl thead th{
   background:var(--surface2);
   color:var(--txt3);font-size:9px;font-weight:600;
-  letter-spacing:.06em;text-transform:uppercase;
-  padding:5px 8px;text-align:left;
+  letter-spacing:.05em;text-transform:uppercase;
+  padding:4px 6px;text-align:left;
   border-bottom:1px solid var(--border2);
   position:sticky;top:0;z-index:2;
 }
 .rank-tbl thead th.num{text-align:right}
-.rank-tbl tbody tr{border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+.rank-tbl tbody tr{border-bottom:1px solid rgba(255,255,255,.03);cursor:pointer;transition:background .1s}
 .rank-tbl tbody tr:hover td{background:var(--surface2)!important}
-.rank-tbl tbody tr.is-me td{background:var(--blue-dim)!important}
+.rank-tbl tbody tr.is-me td{background:rgba(59,130,246,.07)!important}
 .rank-tbl tbody tr.is-me .rtd-name{color:var(--blue);font-weight:700}
-.rtd-pos{padding:4px 3px;width:22px;font-size:10px;color:var(--txt3);text-align:center;flex-shrink:0}
-.rtd-name{padding:4px 4px;font-size:12px;font-weight:500;color:var(--txt);white-space:nowrap;width:72px;min-width:72px;max-width:72px;overflow:hidden;text-overflow:ellipsis}
-.rtd-num{padding:4px 4px;text-align:center;font-size:12px;font-weight:700;white-space:nowrap;width:36px}
+.rtd-pos{padding:3px 4px;width:22px;font-size:9px;color:var(--txt3);text-align:center}
+.rtd-name{padding:3px 4px;font-size:11px;font-weight:500;color:var(--txt);white-space:nowrap;width:70px;min-width:70px;max-width:70px;overflow:hidden;text-overflow:ellipsis}
+.rtd-num{padding:3px 4px;text-align:center;font-size:11px;font-weight:700;white-space:nowrap;width:30px}
 .rtd-pts{color:var(--amber)}
 .rtd-m{color:var(--txt2)}
 .rtd-b{color:#5B7BA8}
-.rtd-bar{padding:4px 8px 4px 4px}
-.bar-cell{width:100%;min-width:60px;height:7px;background:var(--border);border-radius:0;overflow:hidden}
-.bar-cell-fill{height:100%;border-radius:0;background:var(--amber);transition:width .3s}
+.rtd-bar{padding:3px 8px 3px 2px}
+.bar-cell{height:5px;background:var(--border);border-radius:0;overflow:hidden}
+.bar-cell-fill{height:100%;border-radius:0;background:rgba(245,158,11,.6);transition:width .3s}
 
 /* ════════════════════════════════════════════════════
    TAB 2: LLAVE (bracket)
@@ -314,7 +314,7 @@ body{
   padding:3px 8px;display:flex;align-items:center;gap:4px;
 }
 .bslot-my-pred-score{
-  font-weight:700;color:var(--amber);
+  font-weight:700;color:#7EB8D4;
 }
 .bslot-my-pred-pts{
   margin-left:auto;font-weight:700;
@@ -403,7 +403,7 @@ body{
 .preds-tbl thead th.c{text-align:center}
 .preds-tbl tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:filter .1s}
 .preds-tbl tbody tr:hover{filter:brightness(1.12)}
-.preds-tbl tbody tr.is-me td{font-weight:700;background:var(--blue-dim)!important;color:var(--blue)}
+.preds-tbl tbody tr.is-me td{font-weight:700;background:rgba(59,130,246,.07)!important}
 .preds-tbl tbody tr.is-me .ptd-name{color:var(--blue)!important}
 .preds-tbl tbody tr.pred-local td{background:#1E222A}
 .preds-tbl tbody tr.pred-empate td{background:#191C22}
@@ -564,7 +564,7 @@ body{
 
     <!-- TAB: RANKING -->
     <div class="tab-pane active" id="pane-ranking">
-      <div class="rank-list" style="padding:6px 10px">
+      <div class="rank-list" style="padding:0">
         <table class="rank-tbl">
           <thead>
             <tr>
@@ -631,6 +631,7 @@ function abbr(n){
   if(!n)return n;
   if(n==='Países Bajos')return'Países B';
   if(n==='Costa de Marfil')return'Costa de M';
+  if(n==='Estados Unidos')return'EE. UU.';
   return n;
 }
 const F={
@@ -638,7 +639,7 @@ const F={
   'Paraguay':'py','Países Bajos':'nl','Marruecos':'ma','Costa de Marfil':'ci',
   'Noruega':'no','Francia':'fr','Suecia':'se','México':'mx','Ecuador':'ec',
   'Inglaterra':'gb-eng','Congo RD':'cd','Bélgica':'be','Senegal':'sn',
-  'Estados Unidos':'us','Bosnia-Herz.':'ba','España':'es','Austria':'at',
+  'Estados Unidos':'us','EE. UU.':'us','Bosnia-Herz.':'ba','España':'es','Austria':'at',
   'Portugal':'pt','Croacia':'hr','Suiza':'ch','Argelia':'dz','Australia':'au',
   'Egipto':'eg','Argentina':'ar','Cabo Verde':'cv','Colombia':'co','Ghana':'gh',
 };
@@ -1259,7 +1260,7 @@ function renderStats(){
 
   function stRow(isMe,rank,name,val,maxVal,barColor,extra){
     const barW=maxVal>0?Math.round((val/maxVal)*100):0;
-    const bg=isMe?'background:var(--blue-dim)!important':'';
+    const bg=isMe?'background:rgba(59,130,246,.07)':'';
     return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);${bg}" class="${isMe?'is-me':''}">
       <td style="padding:3px 6px;color:var(--txt3);font-size:9px;text-align:center">${rank}°</td>
       <td style="padding:3px 6px;font-size:11px;font-weight:${isMe?700:500};color:${isMe?'var(--blue)':'var(--txt)'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:70px;min-width:70px;max-width:70px">${name}</td>
@@ -1289,8 +1290,8 @@ function renderStats(){
   const byBonus=[...stats].sort((a,b)=>b.bonus-a.bonus||a.rank-b.rank);
   const byExact=[...stats].sort((a,b)=>b.exact-a.exact||a.rank-b.rank);
 
-  const bonusRows=byBonus.map(s=>stRow(s.name===S.me,s.rank,s.name,s.bonus,maxBonus,'var(--blue)','')).join('');
-  const exactRows=byExact.map(s=>stRow(s.name===S.me,s.rank,s.name,s.exact,maxExact,'var(--red)','')).join('');
+  const bonusRows=byBonus.map(s=>stRow(s.name===S.me,s.rank,s.name,s.bonus,maxBonus,'#5B7BA8','')).join('');
+  const exactRows=byExact.map(s=>stRow(s.name===S.me,s.rank,s.name,s.exact,maxExact,'#A06060','')).join('');
 
   const headers2=[{label:'#',w:'22px'},{label:'Participante',w:'70px'},{label:'',w:'auto'},{label:'N',right:true,w:'28px'}];
 
@@ -1314,7 +1315,7 @@ function renderStats(){
       return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);background:${bg}">
         <td style="padding:3px 6px;font-size:9px;color:var(--txt3);text-align:center">${i+1}</td>
         <td style="padding:3px 6px;font-size:11px;color:var(--txt);width:90px;min-width:90px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${flagHtml}${abbr(team)}</td>
-        <td style="padding:3px 6px;width:100%"><div style="height:5px;background:var(--border);border-radius:0;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--amber)"></div></div></td>
+        <td style="padding:3px 6px;width:100%"><div style="height:5px;background:var(--border);border-radius:0;overflow:hidden"><div style="height:100%;width:${pct}%;background:rgba(245,158,11,.55)"></div></div></td>
         <td style="padding:3px 8px;text-align:right;font-size:11px;font-weight:700;color:var(--amber)">${n}</td>
       </tr>`;
     }).join('');
@@ -1342,7 +1343,7 @@ function renderStats(){
       return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);background:${bg}">
         <td style="padding:3px 6px;font-size:9px;color:var(--txt3);text-align:center">${i+1}</td>
         <td style="padding:3px 6px;font-size:11px;color:var(--txt);width:90px;min-width:90px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${flagHtml}${abbr(team)}</td>
-        <td style="padding:3px 6px;width:100%"><div style="height:5px;background:var(--border);border-radius:0;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--green)"></div></div></td>
+        <td style="padding:3px 6px;width:100%"><div style="height:5px;background:var(--border);border-radius:0;overflow:hidden"><div style="height:100%;width:${pct}%;background:rgba(16,185,129,.5)"></div></div></td>
         <td style="padding:3px 8px;text-align:right;font-size:11px;font-weight:700;color:var(--green)">${n}</td>
       </tr>`;
     }).join('');
