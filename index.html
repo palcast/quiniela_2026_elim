@@ -220,12 +220,21 @@ body{
 .bracket-scroll{
   overflow-x:auto;padding:12px 16px 16px;
   -webkit-overflow-scrolling:touch;
+  position:relative;
 }
 .bracket-scroll::-webkit-scrollbar{height:4px}
 .bracket-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 .bracket-grid{
   display:flex;gap:0;
   min-width:860px;
+  position:relative;
+}
+.bracket-svg{
+  position:absolute;
+  top:0;left:0;
+  width:100%;height:100%;
+  pointer-events:none;
+  overflow:visible;
 }
 .bracket-round{
   display:flex;flex-direction:column;
@@ -585,8 +594,9 @@ body{
 
     <!-- TAB: LLAVE -->
     <div class="tab-pane" id="pane-llave">
-      <div class="bracket-scroll">
+      <div class="bracket-scroll" id="bracket-scroll">
         <div class="bracket-grid" id="bracket-grid"></div>
+        <svg class="bracket-svg" id="bracket-svg"></svg>
       </div>
     </div>
 
@@ -944,6 +954,7 @@ function renderBracket(){
 
       const slot=document.createElement('div');
       slot.className=`bslot${played?' played':' pending'}`;
+      slot.dataset.sid=String(sid);
       slot.style.cursor='pointer';
       if(m){
         slot.onclick=()=>{document.getElementById('match-sel').value=m.id;switchTab('partido',document.getElementById('nav-partido'));renderMatchDetail();};
@@ -968,6 +979,93 @@ function renderBracket(){
     col.appendChild(slots);
     grid.appendChild(col);
   });
+
+  // Draw connector lines after layout settles
+  requestAnimationFrame(()=>requestAnimationFrame(drawBracketLines));
+}
+
+/* ════════════════════════════════════════════════
+   BRACKET CONNECTOR LINES
+════════════════════════════════════════════════ */
+function drawBracketLines(){
+  const svg = document.getElementById('bracket-svg');
+  const grid = document.getElementById('bracket-grid');
+  if(!svg||!grid) return;
+  svg.innerHTML = '';
+
+  const gridRect = grid.getBoundingClientRect();
+
+  // Bracket wiring: [srcA, srcB] → dst
+  // slot IDs: R32=1-16, R16=17-24, QF=25-28, SF=29-30, 3P=31, F=32
+  const WIRING = [
+    // R32 → R16
+    {a:1,  b:4,  dst:17}, // Oct1: M1+M4 → Oct1
+    {a:2,  b:5,  dst:18}, // Oct2: M2+M5 → Oct2
+    {a:3,  b:6,  dst:19}, // Oct3: M3+M6 → Oct3
+    {a:7,  b:8,  dst:20}, // Oct4: M7+M8 → Oct4
+    {a:10, b:9,  dst:21}, // Oct5: M10+M9 → Oct5
+    {a:12, b:11, dst:22}, // Oct6: M12+M11 → Oct6
+    {a:13, b:16, dst:23}, // Oct7: M13+M16 → Oct7
+    {a:15, b:14, dst:24}, // Oct8: M15+M14 → Oct8
+    // R16 → QF
+    {a:19, b:17, dst:25}, // QF1
+    {a:22, b:21, dst:26}, // QF2
+    {a:18, b:20, dst:27}, // QF3
+    {a:24, b:23, dst:28}, // QF4
+    // QF → SF
+    {a:25, b:26, dst:29}, // SF1
+    {a:27, b:28, dst:30}, // SF2
+    // SF → 3P (losers) and Final
+    {a:29, b:30, dst:32}, // Final
+    {a:29, b:30, dst:31}, // 3er lugar (losers — same sources, different dst)
+  ];
+
+  function slotMidRight(sid){
+    const el = grid.querySelector(`[data-sid="${sid}"]`);
+    if(!el) return null;
+    const r = el.getBoundingClientRect();
+    return {
+      x: r.right - gridRect.left,
+      y: (r.top + r.bottom) / 2 - gridRect.top,
+    };
+  }
+  function slotMidLeft(sid){
+    const el = grid.querySelector(`[data-sid="${sid}"]`);
+    if(!el) return null;
+    const r = el.getBoundingClientRect();
+    return {
+      x: r.left - gridRect.left,
+      y: (r.top + r.bottom) / 2 - gridRect.top,
+    };
+  }
+
+  const LINE_COLOR = 'rgba(255,255,255,0.08)';
+  const LINE_W = 1;
+
+  WIRING.forEach(({a, b, dst})=>{
+    const pA = slotMidRight(a);
+    const pB = slotMidRight(b);
+    const pDst = slotMidLeft(dst);
+    if(!pA || !pB || !pDst) return;
+
+    // Midpoint between the two source slots (horizontal midpoint)
+    const midX = (pA.x + pDst.x) / 2;
+
+    // Line from A right → midX → merge → dst left
+    // Using step/elbow: A right → midX horizontal → vertical to merge → dstLeft
+    const mergeY = (pA.y + pB.y) / 2;
+
+    // Path A: right edge of A → elbow → merge point
+    svg.innerHTML += `<path d="M${pA.x},${pA.y} H${midX} V${mergeY}" fill="none" stroke="${LINE_COLOR}" stroke-width="${LINE_W}"/>`;
+    // Path B: right edge of B → elbow → merge point
+    svg.innerHTML += `<path d="M${pB.x},${pB.y} H${midX} V${mergeY}" fill="none" stroke="${LINE_COLOR}" stroke-width="${LINE_W}"/>`;
+    // Path merge → dst left
+    svg.innerHTML += `<path d="M${midX},${mergeY} H${pDst.x}" fill="none" stroke="${LINE_COLOR}" stroke-width="${LINE_W}"/>`;
+  });
+
+  // Update SVG size to match grid
+  svg.setAttribute('width', gridRect.width);
+  svg.setAttribute('height', gridRect.height);
 }
 
 /* ════════════════════════════════════════════════
@@ -1407,6 +1505,10 @@ function switchTab(id,btn){
    AUTO REFRESH
 ════════════════════════════════════════════════ */
 if(CFG.REFRESH>0)setInterval(loadData,CFG.REFRESH*60*1000);
+
+// Redraw bracket lines on resize
+let _rbt;
+window.addEventListener('resize',()=>{clearTimeout(_rbt);_rbt=setTimeout(drawBracketLines,200);});
 
 /* BOOT */
 loadData();
