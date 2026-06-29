@@ -191,7 +191,7 @@ body{
    TAB 1: RANKING — ultra-compact table
 ════════════════════════════════════════════════════ */
 .rank-list{padding:0;margin-top:0}
-.rank-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.rank-tbl{width:100%;border-collapse:collapse;font-size:12px;table-layout:auto}
 .rank-tbl thead th{
   background:var(--surface2);
   color:var(--txt3);font-size:9px;font-weight:600;
@@ -205,15 +205,15 @@ body{
 .rank-tbl tbody tr:hover td{background:var(--surface2)!important}
 .rank-tbl tbody tr.is-me td{background:var(--blue-dim)!important}
 .rank-tbl tbody tr.is-me .rtd-name{color:var(--blue);font-weight:700}
-.rtd-pos{padding:4px 8px;width:30px;font-size:10px;color:var(--txt3);text-align:center}
-.rtd-name{padding:4px 6px;font-size:12px;font-weight:500;color:var(--txt)}
-.rtd-num{padding:4px 8px;text-align:right;font-size:12px;font-weight:700;white-space:nowrap}
+.rtd-pos{padding:4px 3px;width:22px;font-size:10px;color:var(--txt3);text-align:center;flex-shrink:0}
+.rtd-name{padding:4px 4px;font-size:12px;font-weight:500;color:var(--txt);white-space:nowrap;width:72px;min-width:72px;max-width:72px;overflow:hidden;text-overflow:ellipsis}
+.rtd-num{padding:4px 4px;text-align:center;font-size:12px;font-weight:700;white-space:nowrap;width:36px}
 .rtd-pts{color:var(--amber)}
 .rtd-m{color:var(--txt2)}
-.rtd-b{color:#7A8499}
-.rtd-bar{padding:4px 8px;width:60px}
-.bar-cell{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
-.bar-cell-fill{height:100%;border-radius:2px;transition:width .3s}
+.rtd-b{color:#5B7BA8}
+.rtd-bar{padding:4px 8px 4px 4px}
+.bar-cell{width:100%;min-width:60px;height:7px;background:var(--border);border-radius:0;overflow:hidden}
+.bar-cell-fill{height:100%;border-radius:0;background:var(--amber);transition:width .3s}
 
 /* ════════════════════════════════════════════════════
    TAB 2: LLAVE (bracket)
@@ -314,7 +314,7 @@ body{
   padding:3px 8px;display:flex;align-items:center;gap:4px;
 }
 .bslot-my-pred-score{
-  font-weight:700;color:var(--blue);
+  font-weight:700;color:var(--amber);
 }
 .bslot-my-pred-pts{
   margin-left:auto;font-weight:700;
@@ -403,13 +403,12 @@ body{
 .preds-tbl thead th.c{text-align:center}
 .preds-tbl tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:filter .1s}
 .preds-tbl tbody tr:hover{filter:brightness(1.12)}
-.preds-tbl tbody tr.is-me td{font-weight:700}
-.preds-tbl tbody tr.pred-local td{background:rgba(59,130,246,.05)}
-.preds-tbl tbody tr.pred-empate td{background:rgba(100,116,139,.06)}
-.preds-tbl tbody tr.pred-visitor td{background:rgba(245,158,11,.04)}
-.preds-tbl tbody tr.p5-row td{border-left:2px solid var(--red)}
-.preds-tbl tbody tr.p4-row td{border-left:2px solid var(--amber)}
-.preds-tbl tbody tr.p3-row td{border-left:2px solid var(--green)}
+.preds-tbl tbody tr.is-me td{font-weight:700;background:var(--blue-dim)!important;color:var(--blue)}
+.preds-tbl tbody tr.is-me .ptd-name{color:var(--blue)!important}
+.preds-tbl tbody tr.pred-local td{background:#1E222A}
+.preds-tbl tbody tr.pred-empate td{background:#191C22}
+.preds-tbl tbody tr.pred-visitor td{background:#171A20}
+
 .ptd{padding:3px 6px;vertical-align:middle}
 .ptd-rank{color:var(--txt3);font-size:9px;width:22px;text-align:center}
 .ptd-name{font-size:11px;color:var(--txt);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -448,7 +447,10 @@ body{
 .mq-card.correct-4{border-left:3px solid var(--amber)}
 .mq-card.correct-3{border-left:3px solid var(--green)}
 .mq-card.pending-card{opacity:.7}
-.mq-teams{flex:1;display:flex;flex-direction:column;gap:2px}
+.mq-matchup{flex:1;display:flex;align-items:center;gap:5px;min-width:0}
+.mq-tname{font-size:11px;font-weight:500;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.mq-tname-l{text-align:right}
+.mq-tname-r{text-align:left}
 .mq-team-row{display:flex;align-items:center;gap:6px}
 .mq-flag{width:14px;height:14px;border-radius:50%;object-fit:cover;border:1px solid var(--border2);flex-shrink:0}
 .mq-flag-ph{width:14px;height:14px;border-radius:50%;background:var(--border2);flex-shrink:0}
@@ -532,12 +534,11 @@ body{
 
   <!-- TOP BAR -->
   <div class="topbar">
-    <div class="topbar-title">🏆 <span>Mundial</span> 2026</div>
-    <div class="topbar-pills">
-      <div class="tpill">⚽ <strong id="h-played">—</strong> jugados</div>
-      <div class="tpill">⏳ <strong id="h-pend">—</strong> pendientes</div>
-    </div>
-    <div class="topbar-right">
+    <div class="topbar-title">Quiniela <span>Mundial 2026</span></div>
+    <div class="topbar-right" style="display:flex;align-items:center;gap:8px;margin-left:auto">
+      <select id="part-sel-top" style="background:var(--surface2);border:1px solid var(--border2);color:var(--txt);padding:4px 8px;font-family:Inter,sans-serif;font-size:12px;border-radius:4px;outline:none;max-width:140px" onchange="setMe(this.value)">
+        <option value="">Participante…</option>
+      </select>
       <button class="refresh-btn" id="refresh-btn" onclick="loadData()" title="Actualizar">↻</button>
     </div>
   </div>
@@ -548,15 +549,12 @@ body{
       <span class="nav-icon">🏆</span>Ranking
     </button>
     <button class="nav-btn" id="nav-llave" onclick="switchTab('llave',this)">
-      <span class="nav-icon">🗂️</span>Llave
+      <span class="nav-icon">⚽</span>Brack
     </button>
     <button class="nav-btn" id="nav-partido" onclick="switchTab('partido',this)">
-      <span class="nav-icon">🔍</span>Partido
+      <span class="nav-icon">📅</span>Partido
     </button>
-    <button class="nav-btn" id="nav-mi" onclick="switchTab('mi',this)">
-      <span class="nav-icon">👤</span>Mi Quiniela
-    </button>
-    <button class="nav-btn" id="nav-stats" onclick="switchTab('stats',this)">
+<button class="nav-btn" id="nav-stats" onclick="switchTab('stats',this)">
       <span class="nav-icon">📊</span>Stats
     </button>
   </nav>
@@ -566,16 +564,16 @@ body{
 
     <!-- TAB: RANKING -->
     <div class="tab-pane active" id="pane-ranking">
-      <div class="rank-list">
+      <div class="rank-list" style="padding:6px 10px">
         <table class="rank-tbl">
           <thead>
             <tr>
-              <th style="width:30px;text-align:center">#</th>
-              <th>Participante</th>
-              <th class="num" style="color:var(--amber)">Total</th>
-              <th class="num" style="color:var(--txt2)">Marc.</th>
-              <th class="num" style="color:#7A8499">Bonus</th>
-              <th style="width:60px"></th>
+              <th style="width:22px;text-align:center">#</th>
+              <th style="width:72px">Participante</th>
+              <th class="num" style="color:var(--amber);text-align:center;width:36px">Total</th>
+              <th class="num" style="color:var(--txt2);text-align:center;width:36px">Marc</th>
+              <th class="num" style="color:#5B7BA8;text-align:center;width:36px">Bon</th>
+              <th></th>
             </tr>
           </thead>
           <tbody id="rank-tbody"></tbody>
@@ -585,10 +583,6 @@ body{
 
     <!-- TAB: LLAVE -->
     <div class="tab-pane" id="pane-llave">
-      <div class="sec-hdr">Bracket Eliminatorio</div>
-      <div style="padding:0 16px;font-size:11px;color:var(--txt3);margin-bottom:8px">
-        Desliza para ver el bracket completo · Muestra tus pronósticos debajo de cada partido
-      </div>
       <div class="bracket-scroll">
         <div class="bracket-grid" id="bracket-grid"></div>
       </div>
@@ -604,15 +598,7 @@ body{
       <div id="match-detail-content"></div>
     </div>
 
-    <!-- TAB: MI QUINIELA -->
-    <div class="tab-pane" id="pane-mi">
-      <div class="sec-hdr">Mis pronósticos</div>
-      <div id="mi-content">
-        <div style="text-align:center;color:var(--txt3);font-size:12px;padding:30px">Selecciona tu nombre para ver tus pronósticos.</div>
-      </div>
-    </div>
-
-    <!-- TAB: STATS -->
+<!-- TAB: STATS -->
     <div class="tab-pane" id="pane-stats">
       <div class="sec-hdr">Estadísticas</div>
       <div class="stats-grid" id="stats-content">
@@ -641,6 +627,12 @@ const CFG = {
 /* ════════════════════════════════════════════════
    FLAGS
 ════════════════════════════════════════════════ */
+function abbr(n){
+  if(!n)return n;
+  if(n==='Países Bajos')return'Países B';
+  if(n==='Costa de Marfil')return'Costa de M';
+  return n;
+}
 const F={
   'Sudáfrica':'za','Canadá':'ca','Brasil':'br','Japón':'jp','Alemania':'de',
   'Paraguay':'py','Países Bajos':'nl','Marruecos':'ma','Costa de Marfil':'ci',
@@ -757,9 +749,6 @@ async function loadData(){
       };
     });
 
-    document.getElementById('h-played').textContent=S.matches.filter(m=>m.gl!==null).length;
-    document.getElementById('h-pend').textContent=S.matches.filter(m=>m.gl===null).length;
-
     populateModals();
     rerender();
 
@@ -786,7 +775,16 @@ async function loadData(){
   document.getElementById('refresh-btn').classList.remove('spinning');
 }
 
+function populateTopSel(){
+  const sel=document.getElementById('part-sel-top');
+  if(!sel)return;
+  const prev=S.me||sel.value;
+  sel.innerHTML='<option value="">Participante…</option>';
+  S.parts.forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.name+(p.rank<=3?' '+(p.rank===1?'🥇':p.rank===2?'🥈':'🥉'):'');sel.appendChild(o);});
+  if(prev&&S.parts.find(p=>p.name===prev))sel.value=prev;
+}
 function populateModals(){
+  populateTopSel();
   const ms=document.getElementById('modal-sel');
   const prev=ms.value;
   ms.innerHTML='<option value="">Selecciona tu nombre…</option>';
@@ -796,11 +794,29 @@ function populateModals(){
   const ms2=document.getElementById('match-sel');
   const prev2=ms2.value;
   ms2.innerHTML='<option value="">Selecciona un partido…</option>';
-  S.matches.forEach(m=>{
-    const pl=m.gl!==null;
+  // Show all bracket slots including undefined teams
+  const BRACKET_SLOTS=[
+    {id:'1',ronda:'R32',code:'R32-M1'},{id:'2',ronda:'R32',code:'R32-M2'},{id:'3',ronda:'R32',code:'R32-M3'},
+    {id:'4',ronda:'R32',code:'R32-M4'},{id:'5',ronda:'R32',code:'R32-M5'},{id:'6',ronda:'R32',code:'R32-M6'},
+    {id:'7',ronda:'R32',code:'R32-M7'},{id:'8',ronda:'R32',code:'R32-M8'},{id:'9',ronda:'R32',code:'R32-M9'},
+    {id:'10',ronda:'R32',code:'R32-M10'},{id:'11',ronda:'R32',code:'R32-M11'},{id:'12',ronda:'R32',code:'R32-M12'},
+    {id:'13',ronda:'R32',code:'R32-M13'},{id:'14',ronda:'R32',code:'R32-M14'},{id:'15',ronda:'R32',code:'R32-M15'},
+    {id:'16',ronda:'R32',code:'R32-M16'},
+    {id:'17',ronda:'R16',code:'Oct1'},{id:'18',ronda:'R16',code:'Oct2'},{id:'19',ronda:'R16',code:'Oct3'},
+    {id:'20',ronda:'R16',code:'Oct4'},{id:'21',ronda:'R16',code:'Oct5'},{id:'22',ronda:'R16',code:'Oct6'},
+    {id:'23',ronda:'R16',code:'Oct7'},{id:'24',ronda:'R16',code:'Oct8'},
+    {id:'25',ronda:'QF',code:'QF1'},{id:'26',ronda:'QF',code:'QF2'},{id:'27',ronda:'QF',code:'QF3'},{id:'28',ronda:'QF',code:'QF4'},
+    {id:'29',ronda:'SF',code:'SF1'},{id:'30',ronda:'SF',code:'SF2'},
+    {id:'31',ronda:'3P',code:'3er Lugar'},{id:'32',ronda:'F',code:'Final'},
+  ];
+  BRACKET_SLOTS.forEach(slot=>{
+    const m=S.matches.find(x=>x.id===slot.id||x.code===slot.code);
+    const pl=m&&m.gl!==null;
+    const ta=m?m.local||'TBD':'TBD';
+    const tb=m?m.visitante||'TBD':'TBD';
     const o=document.createElement('option');
-    o.value=m.id;
-    o.textContent=`${RONDA_LBL[m.ronda]||m.ronda} · ${m.local} vs ${m.visitante}${pl?` (${m.gl}-${m.gv})`:''}`;
+    o.value=m?m.id:slot.id;
+    o.textContent=`${RONDA_LBL[slot.ronda]||slot.ronda} · ${slot.code} · ${ta} vs ${tb}${pl?` (${m.gl}-${m.gv})`:''}`;
     ms2.appendChild(o);
   });
   if(prev2&&S.matches.find(m=>m.id===prev2)){ms2.value=prev2;}
@@ -815,7 +831,9 @@ function confirmParticipant(){
 }
 function setMe(name){
   S.me=name;
-  localStorage.setItem('quiniela_elim_me',name);
+  if(name)localStorage.setItem('quiniela_elim_me',name);
+  const top=document.getElementById('part-sel-top');
+  if(top&&top.value!==name)top.value=name;
   rerender();
 }
 
@@ -823,7 +841,6 @@ function rerender(){
   renderRanking();
   renderBracket();
   renderMatchDetail();
-  renderMiQuiniela();
   renderStats();
 }
 
@@ -839,15 +856,14 @@ function renderRanking(){
   tbody.innerHTML=S.parts.map(p=>{
     const isMe=p.name===S.me;
     const barPct=Math.round((p.pts/maxPts)*100);
-    const barColor=isMe?'var(--blue)':'var(--border2)';
     const medal=medals[p.rank]||'';
     return`<tr class="${isMe?'is-me':''}" onclick="setMe('${p.name}');renderRanking()">
       <td class="rtd-pos">${medal||p.rank+'°'}</td>
-      <td class="ptd rtd-name">${p.name}</td>
+      <td class="rtd-name">${abbr(p.name)}</td>
       <td class="rtd-num rtd-pts">${p.pts}</td>
       <td class="rtd-num rtd-m">${p.pm}</td>
       <td class="rtd-num rtd-b">${p.pb}</td>
-      <td class="rtd-bar"><div class="bar-cell"><div class="bar-cell-fill" style="width:${barPct}%;background:${barColor}"></div></div></td>
+      <td class="rtd-bar"><div class="bar-cell"><div class="bar-cell-fill" style="width:${barPct}%"></div></div></td>
     </tr>`;
   }).join('');
 }
@@ -871,76 +887,78 @@ function renderBracket(){
   grid.innerHTML='';
   ROUNDS.forEach(rnd=>{
     const ms=S.matches.filter(m=>m.ronda===rnd.key);
-    if(!ms.length)return;
+    // Unified slot rendering: always render full set of slots per round
+    // Map real matches by id for lookup
+    const SLOT_IDS={R32:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],R16:[17,18,19,20,21,22,23,24],QF:[25,26,27,28],SF:[29,30],'3P':[31],F:[32]};
+    const slotIds=SLOT_IDS[rnd.key]||[];
+    const msById={};ms.forEach(m=>msById[m.id]=m);
+    const topN={'R32':0,'R16':3,'QF':5,'SF':5,'3P':5,'F':5}[rnd.key]||0;
+    const medals2={1:'🥇',2:'🥈',3:'🥉',4:'4°',5:'5°'};
 
     const col=document.createElement('div');
     col.className='bracket-round';
-
     col.innerHTML=`<div class="bracket-round-hdr">${rnd.label}<br><span>${rnd.bonus}</span></div>`;
-
     const slots=document.createElement('div');
     slots.className='bracket-slots';
 
-    ms.forEach(m=>{
-      const played=m.gl!==null;
-      const pr=(S.preds[m.id]||{})[S.me];
+    slotIds.forEach(sid=>{
+      const m=msById[String(sid)];
+      const played=m&&m.gl!==null;
+      const predId=m?m.id:String(sid);
+
+      // My prediction
+      const pr=(S.preds[predId]||{})[S.me];
       const hasPred=pr&&pr.l!==null;
       const pm=hasPred&&played?(pr.pm!==null?pr.pm:calcM(m.gl,m.gv,pr.l,pr.v)):null;
       const pb=hasPred&&played?(pr.pb!==null?pr.pb:null):null;
-      const total=pm!==null&&pb!==null?pm+pb:pm;
 
-      const teamA=m.local||'';
-      const teamB=m.visitante||'';
+      const teamA=m?m.local||'':'';
+      const teamB=m?m.visitante||'':'';
       const ganA=played&&m.ganador===teamA;
       const ganB=played&&m.ganador===teamB;
 
       let predRow='';
       if(hasPred){
         const mCls=pm!==null?(pm===5?'pts-5':pm===4?'pts-4':pm>=3?'pts-3':'pts-0'):'';
-        const mStr=played&&pm!==null?`<span class="bslot-my-pred-pts ${mCls}">${pm}</span>`:'';
+        const mStr=played&&pm!==null?`<span class="${mCls}" style="font-size:9px;font-weight:700">+${pm}</span>`:'';
         const bStr=played&&pb>0?`<span style="font-size:9px;color:var(--blue);font-weight:700;margin-left:2px">+${pb}</span>`:'';
-        predRow=`<div class="bslot-my-pred">
-          <span style="color:var(--txt3);font-size:8px">👤</span>
-          <span class="bslot-my-pred-score">${pr.l}-${pr.v}</span>
-          ${pr.gan?`<span style="font-size:8px;color:var(--txt3)">${pr.gan}</span>`:''}
-          ${played?mStr+bStr:''}
-        </div>`;
+        const myName=S.me?`<span style="font-size:8px;color:var(--txt3);font-weight:500;margin-right:2px">${S.me}</span>`:'';
+        predRow=`<div class="bslot-my-pred"><span style="color:var(--txt3);font-size:8px">👤</span>${myName}<span class="bslot-my-pred-score">${pr.l}-${pr.v}</span>${pr.gan?`<span style="font-size:8px;color:var(--txt3)">${abbr(pr.gan)}</span>`:''}${played?mStr+bStr:''}</div>`;
       }
 
-      // Top 3 predictions for pending matches
-      let top3Row='';
-      if(!played){
-        const top3=S.parts.filter(p=>p.rank<=3).map(p=>{
-          const pr2=(S.preds[m.id]||{})[p.name];
+      // Top-n for pending slots
+      let topNRow='';
+      if(!played&&topN>0){
+        const tLines=S.parts.filter(p=>p.rank<=topN).map(p=>{
+          const pr2=(S.preds[predId]||{})[p.name];
           if(!pr2||pr2.l===null)return'';
-          const medal2=p.rank===1?'🥇':p.rank===2?'🥈':'🥉';
-          const ganStr=pr2.gan?` <span style="color:var(--txt3)">${pr2.gan.substring(0,6)}</span>`:'';
-          return `<span style="margin-right:6px">${medal2}<span style="color:var(--txt2);font-size:9px;font-weight:600">${pr2.l}-${pr2.v}</span>${ganStr}</span>`;
+          const ganStr=pr2.gan?`<span style="color:var(--txt3)">${pr2.gan.substring(0,8)}</span>`:'';
+          const nStr=`<span style="color:var(--txt3);font-size:7px;max-width:40px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</span>`;
+          return`<div style="display:flex;align-items:center;gap:3px">${medals2[p.rank]||p.rank+'°'}${nStr}<span style="color:var(--txt2);font-weight:700">${pr2.l}-${pr2.v}</span>${ganStr}</div>`;
         }).filter(Boolean).join('');
-        if(top3)top3Row=`<div style="font-size:8px;color:var(--txt3);border-top:1px solid var(--border);padding:3px 8px;display:flex;flex-wrap:wrap;gap:2px">${top3}</div>`;
+        if(tLines)topNRow=`<div style="font-size:8px;border-top:1px solid var(--border);padding:3px 8px;display:flex;flex-direction:column;gap:2px">${tLines}</div>`;
       }
 
       const slot=document.createElement('div');
       slot.className=`bslot${played?' played':' pending'}`;
-      slot.onclick=()=>{
-        document.getElementById('match-sel').value=m.id;
-        switchTab('partido',document.getElementById('nav-partido'));
-        renderMatchDetail();
-      };
+      slot.style.cursor='pointer';
+      if(m){
+        slot.onclick=()=>{document.getElementById('match-sel').value=m.id;switchTab('partido',document.getElementById('nav-partido'));renderMatchDetail();};
+      } else {
+        slot.onclick=()=>{const sel=document.getElementById('match-sel');if(sel){sel.value=String(sid);}switchTab('partido',document.getElementById('nav-partido'));renderMatchDetail();};
+      }
       slot.innerHTML=`
         <div class="bslot-row${ganA?' winner-row':''}">
           ${teamA?`<img class="bslot-flag" src="${furl(F[teamA]||'')}" onerror="this.style.display='none'" alt="">`:'<div class="bslot-flag-ph"></div>'}
-          <span class="bslot-team${!teamA?' tbd':''}">${teamA||'Por definir'}</span>
+          <span class="bslot-team${!teamA?' tbd':''}">${teamA?abbr(teamA):'Por definir'}</span>
           <span class="bslot-score${!played?' pending':''}">${played?m.gl:''}</span>
-          ${ganA?'<span class="bslot-winner-crown">✓</span>':''}
         </div>
         <div class="bslot-row${ganB?' winner-row':''}">
           ${teamB?`<img class="bslot-flag" src="${furl(F[teamB]||'')}" onerror="this.style.display='none'" alt="">`:'<div class="bslot-flag-ph"></div>'}
-          <span class="bslot-team${!teamB?' tbd':''}">${teamB||'Por definir'}</span>
+          <span class="bslot-team${!teamB?' tbd':''}">${teamB?abbr(teamB):'Por definir'}</span>
           <span class="bslot-score${!played?' pending':''}">${played?m.gv:''}</span>
-          ${ganB?'<span class="bslot-winner-crown">✓</span>':''}
         </div>
-        ${predRow}${top3Row}`;
+        ${predRow}${topNRow}`;
       slots.appendChild(slot);
     });
 
@@ -956,8 +974,34 @@ function renderMatchDetail(){
   const id=document.getElementById('match-sel').value;
   const cont=document.getElementById('match-detail-content');
   if(!id){cont.innerHTML='';return;}
-  const m=S.matches.find(x=>x.id===id);
-  if(!m){cont.innerHTML='';return;}
+  let m=S.matches.find(x=>x.id===id);
+  if(!m){
+    // Synthetic slot — show stub with predictions only
+    cont.innerHTML=`<div class="match-detail-hero"><div class="mdh-ronda" style="margin-bottom:8px">Partido aún no definido</div><div style="text-align:center;color:var(--txt3);font-size:12px">Los equipos se definirán conforme avance el torneo.</div></div>`;
+    // Show predictions for this id
+    const stubParts=[...S.parts].map(p=>{
+      const pr=(S.preds[id]||{})[p.name];
+      const l=pr&&pr.l!==null?pr.l:null;
+      const v=pr&&pr.v!==null?pr.v:null;
+      const diff=l!==null?l-v:null;
+      const tot=l!==null?l+v:null;
+      return{...p,l,v,diff,tot,gan:pr?pr.gan:''};
+    }).sort((a,b)=>{
+      if(a.l===null&&b.l===null)return a.rank-b.rank;
+      if(a.l===null)return 1;if(b.l===null)return-1;
+      if(b.diff!==a.diff)return b.diff-a.diff;
+      if(a.tot!==b.tot){if(a.diff>=0)return b.tot-a.tot;else return a.tot-b.tot;}
+      const ga=a.gan||'';const gb=b.gan||'';
+      if(ga!==gb)return ga.localeCompare(gb);
+      return a.rank-b.rank;
+    });
+    const pRows=stubParts.map((p)=>{
+      if(p.l===null)return`<tr><td class="ptd ptd-rank">${p.rank}°</td><td class="ptd ptd-name">${p.name}</td><td class="ptd c" colspan="5"><span class="no-pred">—</span></td></tr>`;
+      return`<tr class="${S.me===p.name?'is-me':''}"><td class="ptd ptd-rank">${p.rank}°</td><td class="ptd ptd-name">${p.name}</td><td class="ptd ptd-score c">${p.l}-${p.v}</td><td class="ptd ptd-gan">${p.gan?fimg(p.gan,14):''}</td><td class="ptd" style="font-size:10px;color:var(--txt3)">${abbr(p.gan)||''}</td><td class="ptd c"></td><td class="ptd c"></td></tr>`;
+    }).join('');
+    cont.innerHTML+=`<div class="preds-list" style="padding:0 12px;margin-top:8px"><table class="preds-tbl"><thead><tr><th style="width:24px;text-align:center">#</th><th>Nombre</th><th class="c" style="width:38px">Marcador</th><th class="c" style="width:18px"></th><th>Gan.</th><th class="c" style="width:28px">Marc</th><th class="c" style="width:28px">Bon</th></tr></thead><tbody>${pRows}</tbody></table></div>`;
+    return;
+  }
 
   const played=m.gl!==null;
   const parts=S.parts;
@@ -984,7 +1028,7 @@ function renderMatchDetail(){
     <div class="split-bar-wrap">
       <div class="split-bar-row">
         <div class="sbl-icon">${fimg(m.local,14)}</div>
-        <div class="sbl-lbl" style="font-size:10px">${m.local}</div>
+        <div class="sbl-lbl" style="font-size:10px">${abbr(m.local)}</div>
         <div class="sbl-bar-bg"><div class="sbl-bar-fill" style="width:${pL}%;background:${realRes==='L'?'var(--green)':'var(--blue)'}"></div></div>
         <div class="sbl-n">${cL}</div>
       </div>
@@ -996,7 +1040,7 @@ function renderMatchDetail(){
       </div>
       <div class="split-bar-row">
         <div class="sbl-icon">${fimg(m.visitante,14)}</div>
-        <div class="sbl-lbl" style="font-size:10px">${m.visitante}</div>
+        <div class="sbl-lbl" style="font-size:10px">${abbr(m.visitante)}</div>
         <div class="sbl-bar-bg"><div class="sbl-bar-fill" style="width:${pV}%;background:${realRes==='V'?'var(--green)':'var(--amber)'}"></div></div>
         <div class="sbl-n">${cV}</div>
       </div>
@@ -1013,11 +1057,22 @@ function renderMatchDetail(){
     const ptsTot=pm!==null&&pb!==null?pm+pb:pm;
     return{...p,l,v,diff,tot,pm,pb,ptsTot,gan:pr?pr.gan:''};
   }).sort((a,b)=>{
-    if(a.l===null&&b.l===null)return 0;
+    if(a.l===null&&b.l===null)return a.rank-b.rank;
     if(a.l===null)return 1;
     if(b.l===null)return-1;
+    // 1. Difference desc
+    // 1. Difference desc
     if(b.diff!==a.diff)return b.diff-a.diff;
-    return(b.tot||0)-(a.tot||0);
+    // 2. Total goals: desc if diff>=0, asc if diff<0
+    if(a.tot!==b.tot){
+      if(a.diff>=0)return b.tot-a.tot;  // higher total first
+      else return a.tot-b.tot;           // lower total first
+    }
+    // 3. Predicted ganador alphabetically
+    const ga=a.gan||'';const gb=b.gan||'';
+    if(ga!==gb)return ga.localeCompare(gb);
+    // 4. Rank in standings
+    return a.rank-b.rank;
   });
 
   const predRows=predsWithInfo.map((p)=>{
@@ -1026,27 +1081,28 @@ function renderMatchDetail(){
       return`<tr class="${isMe?'is-me':''}">
         <td class="ptd ptd-rank">${p.rank}°</td>
         <td class="ptd ptd-name">${p.name}</td>
-        <td class="ptd c" colspan="3"><span class="no-pred">—</span></td>
-        <td class="ptd ptd-pts c">—</td>
+        <td class="ptd c" colspan="5"><span class="no-pred">—</span></td>
       </tr>`;
     }
     const diff=p.l-p.v;
     const dirCls=diff>0?'pred-local':diff===0?'pred-empate':'pred-visitor';
-    const correctCls=played?(p.pm===5?'p5-row':p.pm===4?'p4-row':p.pm===3?'p3-row':''):'';
     const ganFlag=p.gan?fimg(p.gan,14):'';
-    let ptsBadge='';
-    if(played&&p.ptsTot!==null){
+    let mBadge='',bBadge='';
+    if(played&&p.pm!==null){
       const cls=ptsClass(p.pm,p.ptsTot);
-      ptsBadge=`<span class="${cls}" style="font-size:12px;font-weight:700">${p.ptsTot}</span>`;
-      if(p.pb>0)ptsBadge+=`<span style="font-size:9px;color:var(--blue);font-weight:700;margin-left:2px">+${p.pb}</span>`;
+      mBadge=`<span class="${cls}" style="font-size:11px;font-weight:700">+${p.pm}</span>`;
     }
-    return`<tr class="${isMe?'is-me':''} ${dirCls} ${correctCls}">
+    if(played&&p.pb>0){
+      bBadge=`<span style="font-size:11px;color:#5B7BA8;font-weight:700">+${p.pb}</span>`;
+    }
+    return`<tr class="${isMe?'is-me':''} ${dirCls}">
       <td class="ptd ptd-rank">${p.rank}°</td>
       <td class="ptd ptd-name">${p.name}</td>
       <td class="ptd ptd-score c">${p.l}-${p.v}</td>
       <td class="ptd ptd-gan">${ganFlag}</td>
-      <td class="ptd c" style="font-size:10px;color:var(--txt3);max-width:54px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.gan||''}</td>
-      <td class="ptd ptd-pts c">${ptsBadge}</td>
+      <td class="ptd" style="font-size:10px;color:var(--txt3);max-width:48px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${abbr(p.gan)||''}</td>
+      <td class="ptd c">${mBadge}</td>
+      <td class="ptd c">${bBadge}</td>
     </tr>`;
   }).join('');
 
@@ -1059,12 +1115,12 @@ function renderMatchDetail(){
         <div class="mdh-teams">
           <div class="mdh-team">
             ${F[m.local]?`<img class="mdh-flag" src="${furl(F[m.local])}" alt="${m.local}" onerror="this.style.display='none'">`:'<div class="mdh-flag-ph"></div>'}
-            <div class="mdh-team-name">${m.local}</div>
+            <div class="mdh-team-name">${abbr(m.local)}</div>
           </div>
           ${scoreHTML}
           <div class="mdh-team">
             ${F[m.visitante]?`<img class="mdh-flag" src="${furl(F[m.visitante])}" alt="${m.visitante}" onerror="this.style.display='none'">`:'<div class="mdh-flag-ph"></div>'}
-            <div class="mdh-team-name">${m.visitante}</div>
+            <div class="mdh-team-name">${abbr(m.visitante)}</div>
           </div>
         </div>
         ${winHTML}
@@ -1072,8 +1128,7 @@ function renderMatchDetail(){
       ${splitBar}
     </div>
     <div class="preds-list" style="padding:0 12px">
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0 3px">
-        <span style="font-size:9px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase">Pronósticos (${nConPred}/${parts.length})</span>
+      <div style="display:flex;justify-content:flex-end;padding:4px 0 3px">
         <span style="font-size:9px;color:var(--txt3)">
           <span style="color:var(--blue);margin-right:6px">■ Local</span>
           <span style="color:var(--txt2);margin-right:6px">■ Empate</span>
@@ -1087,8 +1142,9 @@ function renderMatchDetail(){
             <th>Nombre</th>
             <th class="c" style="width:38px">Marcador</th>
             <th class="c" style="width:18px"></th>
-            <th style="max-width:50px;overflow:hidden">Gan.</th>
-            <th class="c" style="width:28px">Pts</th>
+            <th style="max-width:48px;overflow:hidden">Gan.</th>
+            <th class="c" style="width:28px;color:var(--txt2)">Marc</th>
+            <th class="c" style="width:28px;color:#5B7BA8">Bon.</th>
           </tr>
         </thead>
         <tbody>${predRows}</tbody>
@@ -1117,7 +1173,6 @@ function renderMiQuiniela(){
 
   ROUNDS.forEach(rnd=>{
     const ms=S.matches.filter(m=>m.ronda===rnd.key);
-    if(!ms.length)return;
 
     let rndPts=0;
     const cards=ms.map(m=>{
@@ -1147,15 +1202,18 @@ function renderMiQuiniela(){
         totalBonus+=pb||0;
       }
 
+      const predScoreStr=hasPred?`${pr.l}-${pr.v}`:'—';
       return `<div class="mq-card ${cls} ${pendCls}">
-        <div class="mq-teams">
-          <div class="mq-team-row">${flagA}<div class="mq-team-name">${m.local}</div></div>
-          <div class="mq-team-row">${flagB}<div class="mq-team-name">${m.visitante}</div></div>
-        </div>
-        <div class="mq-center">
-          <div class="mq-pred${!hasPred?' pending-pred':''}">${predStr}</div>
-          <div class="mq-real">${realStr}</div>
-          ${ganChip}
+        <div class="mq-matchup">
+          <span class="mq-tname mq-tname-l">${m.local||'?'}</span>
+          ${flagA}
+          <div class="mq-center">
+            <div class="mq-pred${!hasPred?' pending-pred':''}">${predScoreStr}</div>
+            <div class="mq-real">${realStr}</div>
+            ${ganChip}
+          </div>
+          ${flagB}
+          <span class="mq-tname mq-tname-r">${m.visitante||'?'}</span>
         </div>
         <div class="mq-pts">${ptsHTML}</div>
       </div>`;
@@ -1186,80 +1244,145 @@ function renderMiQuiniela(){
 function renderStats(){
   const cont=document.getElementById('stats-content');
   const played=S.matches.filter(m=>m.gl!==null);
-  if(!played.length){
-    cont.innerHTML='<div style="text-align:center;color:var(--txt3);font-size:12px;padding:20px">Aún no hay partidos jugados.</div>';
-    return;
+
+  // Stats helper — compact table (like ranking/partido)
+  function stTbl(title,emoji,headers,rows){
+    const hCells=headers.map(h=>`<th style="background:var(--surface2);color:var(--txt3);font-size:9px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:4px 6px;border-bottom:1px solid var(--border2);text-align:${h.right?'right':'left'};width:${h.w||'auto'}">${h.label}</th>`).join('');
+    return`<div class="stat-card" style="padding:0;overflow:hidden;margin-bottom:10px">
+      <div style="padding:8px 10px 6px;font-size:10px;font-weight:700;color:var(--txt3);letter-spacing:.08em;text-transform:uppercase">${emoji} ${title}</div>
+      <table style="width:100%;border-collapse:collapse;font-size:11px">
+        <thead><tr>${hCells}</tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
   }
 
-  // Per-participant stats
+  function stRow(isMe,rank,name,val,maxVal,barColor,extra){
+    const barW=maxVal>0?Math.round((val/maxVal)*100):0;
+    const bg=isMe?'background:var(--blue-dim)!important':'';
+    return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);${bg}" class="${isMe?'is-me':''}">
+      <td style="padding:3px 6px;color:var(--txt3);font-size:9px;text-align:center">${rank}°</td>
+      <td style="padding:3px 6px;font-size:11px;font-weight:${isMe?700:500};color:${isMe?'var(--blue)':'var(--txt)'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:70px;min-width:70px;max-width:70px">${name}</td>
+      <td style="padding:3px 6px"><div style="height:5px;background:var(--border);border-radius:0;overflow:hidden"><div style="height:100%;width:${barW}%;background:${barColor}"></div></div></td>
+      <td style="padding:3px 8px;text-align:right;font-size:11px;font-weight:700;color:${barColor}">${val}</td>
+      ${extra||''}
+    </tr>`;
+  }
+
+  // Per-participant stats (from played matches)
   const stats=S.parts.map(p=>{
-    let exact=0,correct=0,bonus=0,tot=0,n=0;
+    let exact=0,bonus=0,tot=0;
     played.forEach(m=>{
       const pr=(S.preds[m.id]||{})[p.name];
       if(!pr||pr.l===null)return;
       const pm=pr.pm!==null?pr.pm:calcM(m.gl,m.gv,pr.l,pr.v);
       const pb=pr.pb!==null?pr.pb:0;
-      n++;
       if(pm===5)exact++;
-      if(pm>=3)correct++;
       if(pb>0)bonus++;
-      tot+=(pm||0)+(pb||0);
+      tot+=(pm||0)+pb;
     });
-    return{...p,exact,correct,bonus,tot,n};
+    return{...p,exact,bonus,tot};
   });
   const maxExact=Math.max(...stats.map(s=>s.exact),1);
   const maxBonus=Math.max(...stats.map(s=>s.bonus),1);
-  const maxCorrect=Math.max(...stats.map(s=>s.correct),1);
 
-  function statTable(title,arr,valFn,maxVal,barColor,emoji){
-    const rows=arr.map((s,i)=>{
-      const isMe=s.name===S.me;
-      const val=valFn(s);
-      const barW=Math.round((val/maxVal)*100);
-      return`<div class="stat-row${isMe?' is-me':''}">
-        <div class="stat-pos">${s.rank}°</div>
-        <div class="stat-name">${s.name}</div>
-        <div class="stat-bar-wrap"><div class="stat-bar" style="width:${barW}%;background:${barColor}"></div></div>
-        <div class="stat-val" style="color:${barColor}">${val}</div>
-      </div>`;
-    }).join('');
-    return`<div class="stat-card">
-      <div class="stat-card-title">${emoji} ${title}</div>
-      ${rows}
-    </div>`;
-  }
-
-  const byExact=[...stats].sort((a,b)=>b.exact-a.exact||a.rank-b.rank);
   const byBonus=[...stats].sort((a,b)=>b.bonus-a.bonus||a.rank-b.rank);
-  const byCorrect=[...stats].sort((a,b)=>b.correct-a.correct||a.rank-b.rank);
+  const byExact=[...stats].sort((a,b)=>b.exact-a.exact||a.rank-b.rank);
 
-  // Most predicted scores
-  const scoreCounts={};
-  played.forEach(m=>{
-    S.parts.forEach(p=>{
-      const pr=(S.preds[m.id]||{})[p.name];
-      if(!pr||pr.l===null)return;
-      const k=`${pr.l}-${pr.v}`;
-      scoreCounts[k]=(scoreCounts[k]||0)+1;
+  const bonusRows=byBonus.map(s=>stRow(s.name===S.me,s.rank,s.name,s.bonus,maxBonus,'var(--blue)','')).join('');
+  const exactRows=byExact.map(s=>stRow(s.name===S.me,s.rank,s.name,s.exact,maxExact,'var(--red)','')).join('');
+
+  const headers2=[{label:'#',w:'22px'},{label:'Participante',w:'70px'},{label:'',w:'auto'},{label:'N',right:true,w:'28px'}];
+
+  // Campeón pronosticado (use all matches, all preds)
+  const finalMatch=S.matches.find(m=>m.ronda==='F');
+  const champCounts={};
+  S.parts.forEach(p=>{
+    // Look for finalist ganador from Final match preds
+    const ids=finalMatch?[finalMatch.id]:['32'];
+    ids.forEach(fid=>{
+      const pr=(S.preds[fid]||{})[p.name];
+      if(pr&&pr.gan)champCounts[pr.gan]=(champCounts[pr.gan]||0)+1;
     });
   });
-  const topScores=Object.entries(scoreCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  const maxSC=topScores[0]?.[1]||1;
-  const scoreCard=`<div class="stat-card">
-    <div class="stat-card-title">⚽ Marcadores más pronosticados</div>
-    ${topScores.map(([k,n])=>`<div class="stat-row">
-      <div class="stat-pos"></div>
-      <div class="stat-name" style="font-weight:700">${k}</div>
-      <div class="stat-bar-wrap"><div class="stat-bar" style="width:${Math.round(n/maxSC*100)}%;background:var(--border2)"></div></div>
-      <div class="stat-val" style="color:var(--txt2)">${n}</div>
-    </div>`).join('')}
+  const champRows=Object.entries(champCounts).sort((a,b)=>b[1]-a[1])
+    .map(([team,n],i)=>{
+      const code=F[team]||'';
+      const flagHtml=code?`<img style="width:14px;height:14px;border-radius:50%;object-fit:cover;border:1px solid var(--border2);vertical-align:middle;margin-right:4px" src="https://flagcdn.com/${code}.svg" onerror="this.style.display='none'" alt="">`:'';
+      const pct=Math.round(n/S.parts.length*100);
+      const bg=(i%2===0)?'var(--surface)':'var(--bg)';
+      return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);background:${bg}">
+        <td style="padding:3px 6px;font-size:9px;color:var(--txt3);text-align:center">${i+1}</td>
+        <td style="padding:3px 6px;font-size:11px;color:var(--txt);width:90px;min-width:90px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${flagHtml}${abbr(team)}</td>
+        <td style="padding:3px 6px;width:100%"><div style="height:5px;background:var(--border);border-radius:0;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--amber)"></div></div></td>
+        <td style="padding:3px 8px;text-align:right;font-size:11px;font-weight:700;color:var(--amber)">${n}</td>
+      </tr>`;
+    }).join('');
+  const champCard=stTbl('Campeón pronosticado','🏆',[{label:'#',w:'22px'},{label:'Equipo'},{label:'',w:'80px'},{label:'N',right:true,w:'28px'}],
+    champRows||`<tr><td colspan="4" style="padding:8px;text-align:center;color:var(--txt3);font-size:11px">Sin datos</td></tr>`);
+
+  // Triunfos pronosticados por equipo (all matches, all preds — count ganador picks)
+  // Count all predicted winners across ALL match slots and ALL participants
+  // Count wins using the ganador field directly from the Pronósticos sheet
+  // pr.gan is the ganador column which is set for every prediction regardless of draw/win
+  const winCounts={};
+  Object.keys(S.preds).forEach(mid=>{
+    Object.values(S.preds[mid]).forEach(pr=>{
+      if(!pr||pr.l===null)return;
+      if(pr.gan){winCounts[pr.gan]=(winCounts[pr.gan]||0)+1;}
+    });
+  });
+  const winRows=Object.entries(winCounts).sort((a,b)=>b[1]-a[1])
+    .map(([team,n],i)=>{
+      const code=F[team]||'';
+      const flagHtml=code?`<img style="width:14px;height:14px;border-radius:50%;object-fit:cover;border:1px solid var(--border2);vertical-align:middle;margin-right:4px" src="https://flagcdn.com/${code}.svg" onerror="this.style.display='none'" alt="">`:'';
+      const maxW=Math.max(...Object.values(winCounts),1);
+      const pct=Math.round(n/maxW*100);
+      const bg=(i%2===0)?'var(--surface)':'var(--bg)';
+      return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);background:${bg}">
+        <td style="padding:3px 6px;font-size:9px;color:var(--txt3);text-align:center">${i+1}</td>
+        <td style="padding:3px 6px;font-size:11px;color:var(--txt);width:90px;min-width:90px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${flagHtml}${abbr(team)}</td>
+        <td style="padding:3px 6px;width:100%"><div style="height:5px;background:var(--border);border-radius:0;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--green)"></div></div></td>
+        <td style="padding:3px 8px;text-align:right;font-size:11px;font-weight:700;color:var(--green)">${n}</td>
+      </tr>`;
+    }).join('');
+  const winsCard=stTbl('Triunfos pronosticados (total)','⚽',[{label:'#',w:'22px'},{label:'Equipo'},{label:'',w:'80px'},{label:'N',right:true,w:'28px'}],
+    winRows||`<tr><td colspan="4" style="padding:8px;text-align:center;color:var(--txt3);font-size:11px">Sin datos</td></tr>`);
+
+  if(!played.length){
+    cont.innerHTML=champCard+winsCard;
+    return;
+  }
+
+  // Bolsa (prizes)
+  const bolsaRows=S.bolsa.map((r,i)=>{
+    const medals={1:'🥇',2:'🥈',3:'🥉'};
+    const lugar=parseInt(r.lugar||i+1);
+    const monto=parseFloat(r.monto||0);
+    const bg=(i%2===0)?'var(--surface)':'var(--bg)';
+    return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);background:${bg}">
+      <td style="padding:5px 10px;font-size:13px;text-align:center">${medals[lugar]||lugar+'°'}</td>
+      <td style="padding:5px 10px;font-size:12px;font-weight:600;color:var(--txt)">${lugar}° Lugar</td>
+      <td style="padding:5px 10px;font-size:13px;font-weight:700;color:var(--amber);text-align:right">$${monto.toLocaleString('es-MX')}</td>
+    </tr>`;
+  }).join('');
+  const bolsaTotal=S.bolsa.reduce((s,r)=>s+parseFloat(r.monto||0),0);
+  const bolsaCard=`<div class="stat-card" style="padding:0;overflow:hidden;margin-bottom:10px">
+    <div style="padding:8px 10px 4px;font-size:10px;font-weight:700;color:var(--txt3);letter-spacing:.08em;text-transform:uppercase">💰 Premios · Total: <span style="color:var(--amber)">$${bolsaTotal.toLocaleString('es-MX')}</span></div>
+    <table style="width:100%;border-collapse:collapse;font-size:11px">
+      <tbody>${bolsaRows||'<tr><td colspan="3" style="padding:8px;text-align:center;color:var(--txt3)">Sin datos</td></tr>'}</tbody>
+    </table>
   </div>`;
 
+  if(!played.length){
+    cont.innerHTML=champCard+winsCard+bolsaCard;
+    return;
+  }
+
   cont.innerHTML=
-    statTable('Marcadores exactos',byExact,s=>s.exact,maxExact,'var(--red)','🎯')+
-    statTable('Aciertos bonus ganador',byBonus,s=>s.bonus,maxBonus,'var(--blue)','🏳️')+
-    statTable('Resultados correctos',byCorrect,s=>s.correct,maxCorrect,'var(--green)','✅')+
-    scoreCard;
+    stTbl('Aciertos bonus ganador','🏳️',headers2,bonusRows)+
+    stTbl('Marcadores exactos','🎯',headers2,exactRows)+
+    champCard+winsCard+bolsaCard;
 }
 
 /* ════════════════════════════════════════════════
