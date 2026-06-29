@@ -190,7 +190,7 @@ body{
 /* ════════════════════════════════════════════════════
    TAB 1: RANKING — ultra-compact table
 ════════════════════════════════════════════════════ */
-.rank-list{padding:0;margin-top:0}
+.rank-list{padding:8px 12px;margin-top:0}
 .rank-tbl{width:100%;border-collapse:collapse;font-size:11px}
 .rank-tbl thead th{
   background:var(--surface2);
@@ -198,13 +198,12 @@ body{
   letter-spacing:.05em;text-transform:uppercase;
   padding:4px 6px;text-align:left;
   border-bottom:1px solid var(--border2);
-  position:sticky;top:0;z-index:2;
 }
 .rank-tbl thead th.num{text-align:right}
 .rank-tbl tbody tr{border-bottom:1px solid rgba(255,255,255,.03);cursor:pointer;transition:background .1s}
 .rank-tbl tbody tr:hover td{background:var(--surface2)!important}
 .rank-tbl tbody tr.is-me td{background:rgba(59,130,246,.07)!important}
-.rank-tbl tbody tr.is-me .rtd-name{color:var(--blue);font-weight:700}
+.rank-tbl tbody tr.is-me .rtd-name{color:#7BAED4;font-weight:600}
 .rtd-pos{padding:3px 4px;width:22px;font-size:9px;color:var(--txt3);text-align:center}
 .rtd-name{padding:3px 4px;font-size:11px;font-weight:500;color:var(--txt);white-space:nowrap;width:70px;min-width:70px;max-width:70px;overflow:hidden;text-overflow:ellipsis}
 .rtd-num{padding:3px 4px;text-align:center;font-size:11px;font-weight:700;white-space:nowrap;width:30px}
@@ -213,7 +212,7 @@ body{
 .rtd-b{color:#5B7BA8}
 .rtd-bar{padding:3px 8px 3px 2px}
 .bar-cell{height:5px;background:var(--border);border-radius:0;overflow:hidden}
-.bar-cell-fill{height:100%;border-radius:0;background:rgba(245,158,11,.6);transition:width .3s}
+.bar-cell-fill{height:100%;border-radius:0;background:rgba(200,155,50,.7);transition:width .3s}
 
 /* ════════════════════════════════════════════════════
    TAB 2: LLAVE (bracket)
@@ -230,7 +229,7 @@ body{
 }
 .bracket-round{
   display:flex;flex-direction:column;
-  flex:1;
+  flex:1;min-width:120px;
 }
 .bracket-round-hdr{
   text-align:center;
@@ -404,7 +403,7 @@ body{
 .preds-tbl tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:filter .1s}
 .preds-tbl tbody tr:hover{filter:brightness(1.12)}
 .preds-tbl tbody tr.is-me td{font-weight:700;background:rgba(59,130,246,.07)!important}
-.preds-tbl tbody tr.is-me .ptd-name{color:var(--blue)!important}
+.preds-tbl tbody tr.is-me .ptd-name{color:#7BAED4!important}
 .preds-tbl tbody tr.pred-local td{background:#1E222A}
 .preds-tbl tbody tr.pred-empate td{background:#191C22}
 .preds-tbl tbody tr.pred-visitor td{background:#171A20}
@@ -564,20 +563,23 @@ body{
 
     <!-- TAB: RANKING -->
     <div class="tab-pane active" id="pane-ranking">
-      <div class="rank-list" style="padding:0">
-        <table class="rank-tbl">
-          <thead>
-            <tr>
-              <th style="width:22px;text-align:center">#</th>
-              <th style="width:72px">Participante</th>
-              <th class="num" style="color:var(--amber);text-align:center;width:36px">Total</th>
-              <th class="num" style="color:var(--txt2);text-align:center;width:36px">Marc</th>
-              <th class="num" style="color:#5B7BA8;text-align:center;width:36px">Bon</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="rank-tbody"></tbody>
-        </table>
+      <div class="rank-list">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+          <div style="padding:6px 10px 4px;font-size:10px;font-weight:700;color:var(--txt3);letter-spacing:.08em;text-transform:uppercase">🏆 Clasificación</div>
+          <table class="rank-tbl">
+            <thead>
+              <tr>
+                <th style="width:22px;text-align:center">#</th>
+                <th style="width:70px">Participante</th>
+                <th class="num" style="color:var(--amber);text-align:center;width:30px">Total</th>
+                <th class="num" style="color:var(--txt2);text-align:center;width:30px">Marc</th>
+                <th class="num" style="color:#5B7BA8;text-align:center;width:30px">Bon</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="rank-tbody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -937,7 +939,7 @@ function renderBracket(){
           const nStr=`<span style="color:var(--txt3);font-size:7px;max-width:40px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</span>`;
           return`<div style="display:flex;align-items:center;gap:3px">${medals2[p.rank]||p.rank+'°'}${nStr}<span style="color:var(--txt2);font-weight:700">${pr2.l}-${pr2.v}</span>${ganStr}</div>`;
         }).filter(Boolean).join('');
-        if(tLines)topNRow=`<div style="font-size:8px;border-top:1px solid var(--border);padding:3px 8px;display:flex;flex-direction:column;gap:2px">${tLines}</div>`;
+        if(tLines)topNRow=`<div style="font-size:8px;border-top:1px solid var(--border);padding:3px 6px;display:flex;flex-direction:column;gap:1px;white-space:nowrap">${tLines}</div>`;
       }
 
       const slot=document.createElement('div');
@@ -1290,8 +1292,8 @@ function renderStats(){
   const byBonus=[...stats].sort((a,b)=>b.bonus-a.bonus||a.rank-b.rank);
   const byExact=[...stats].sort((a,b)=>b.exact-a.exact||a.rank-b.rank);
 
-  const bonusRows=byBonus.map(s=>stRow(s.name===S.me,s.rank,s.name,s.bonus,maxBonus,'#5B7BA8','')).join('');
-  const exactRows=byExact.map(s=>stRow(s.name===S.me,s.rank,s.name,s.exact,maxExact,'#A06060','')).join('');
+  const bonusRows=byBonus.map(s=>stRow(s.name===S.me,s.rank,s.name,s.bonus,maxBonus,'#4A7090','')).join('');
+  const exactRows=byExact.map(s=>stRow(s.name===S.me,s.rank,s.name,s.exact,maxExact,'#8A5050','')).join('');
 
   const headers2=[{label:'#',w:'22px'},{label:'Participante',w:'70px'},{label:'',w:'auto'},{label:'N',right:true,w:'28px'}];
 
@@ -1315,7 +1317,7 @@ function renderStats(){
       return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);background:${bg}">
         <td style="padding:3px 6px;font-size:9px;color:var(--txt3);text-align:center">${i+1}</td>
         <td style="padding:3px 6px;font-size:11px;color:var(--txt);width:90px;min-width:90px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${flagHtml}${abbr(team)}</td>
-        <td style="padding:3px 6px;width:100%"><div style="height:5px;background:var(--border);border-radius:0;overflow:hidden"><div style="height:100%;width:${pct}%;background:rgba(245,158,11,.55)"></div></div></td>
+        <td style="padding:3px 6px;width:100%"><div style="height:5px;background:var(--border);border-radius:0;overflow:hidden"><div style="height:100%;width:${pct}%;background:#9A7A30"></div></div></td>
         <td style="padding:3px 8px;text-align:right;font-size:11px;font-weight:700;color:var(--amber)">${n}</td>
       </tr>`;
     }).join('');
@@ -1343,7 +1345,7 @@ function renderStats(){
       return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);background:${bg}">
         <td style="padding:3px 6px;font-size:9px;color:var(--txt3);text-align:center">${i+1}</td>
         <td style="padding:3px 6px;font-size:11px;color:var(--txt);width:90px;min-width:90px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${flagHtml}${abbr(team)}</td>
-        <td style="padding:3px 6px;width:100%"><div style="height:5px;background:var(--border);border-radius:0;overflow:hidden"><div style="height:100%;width:${pct}%;background:rgba(16,185,129,.5)"></div></div></td>
+        <td style="padding:3px 6px;width:100%"><div style="height:5px;background:var(--border);border-radius:0;overflow:hidden"><div style="height:100%;width:${pct}%;background:#2E7A5A"></div></div></td>
         <td style="padding:3px 8px;text-align:right;font-size:11px;font-weight:700;color:var(--green)">${n}</td>
       </tr>`;
     }).join('');
