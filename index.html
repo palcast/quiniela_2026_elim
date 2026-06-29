@@ -203,7 +203,7 @@ body{
 .rank-tbl tbody tr{border-bottom:1px solid rgba(255,255,255,.03);cursor:pointer;transition:background .1s}
 .rank-tbl tbody tr:hover td{background:var(--surface2)!important}
 .rank-tbl tbody tr.is-me td{background:rgba(59,130,246,.08)!important}
-.rtd-pos{padding:3px 4px;width:22px;font-size:9px;color:var(--txt3);text-align:center}
+.rtd-pos{padding:3px 6px;width:28px;font-size:10px;font-weight:600;color:var(--txt);text-align:center}
 .rtd-name{padding:3px 4px;font-size:11px;font-weight:500;color:var(--txt);white-space:nowrap;width:70px;min-width:70px;max-width:70px;overflow:hidden;text-overflow:ellipsis}
 .rtd-num{padding:3px 4px;text-align:center;font-size:11px;font-weight:700;white-space:nowrap;width:30px}
 .rtd-pts{color:var(--amber)}
@@ -565,11 +565,10 @@ body{
     <div class="tab-pane active" id="pane-ranking">
       <div class="rank-list">
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
-          <div style="padding:6px 10px 4px;font-size:10px;font-weight:700;color:var(--txt3);letter-spacing:.08em;text-transform:uppercase">🏆 Clasificación</div>
           <table class="rank-tbl">
             <thead>
               <tr>
-                <th style="width:22px;text-align:center">#</th>
+                <th style="width:28px;text-align:center">#</th>
                 <th style="width:70px">Participante</th>
                 <th class="num" style="color:var(--amber);text-align:center;width:30px">Total</th>
                 <th class="num" style="color:var(--txt2);text-align:center;width:30px">Marc</th>
@@ -1270,8 +1269,8 @@ function renderStats(){
     return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);${bg}" class="${isMe?'is-me':''}">
       <td style="padding:3px 6px;color:var(--txt3);font-size:9px;text-align:center">${rank}°</td>
       <td style="padding:3px 6px;font-size:11px;font-weight:${isMe?700:500};color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:70px;min-width:70px;max-width:70px">${name}</td>
-      <td style="padding:3px 6px"><div style="height:5px;background:var(--border);border-radius:0;overflow:hidden"><div style="height:100%;width:${barW}%;background:${barColor}"></div></div></td>
-      <td style="padding:3px 8px;text-align:right;font-size:11px;font-weight:700;color:${barColor}">${val}</td>
+      <td style="padding:3px 8px;text-align:right;font-size:12px;font-weight:700;color:${barColor};width:28px">${val}</td>
+      <td style="padding:3px 8px 3px 2px"><div style="height:6px;background:var(--border);border-radius:0;overflow:hidden;min-width:50px"><div style="height:100%;width:${barW}%;background:${barColor}"></div></div></td>
       ${extra||''}
     </tr>`;
   }
@@ -1296,10 +1295,10 @@ function renderStats(){
   const byBonus=[...stats].sort((a,b)=>b.bonus-a.bonus||a.rank-b.rank);
   const byExact=[...stats].sort((a,b)=>b.exact-a.exact||a.rank-b.rank);
 
-  const bonusRows=byBonus.map(s=>stRow(s.name===S.me,s.rank,s.name,s.bonus,maxBonus,'#4A80A0','')).join('');
-  const exactRows=byExact.map(s=>stRow(s.name===S.me,s.rank,s.name,s.exact,maxExact,'#9A5555','')).join('');
+  const bonusRows=byBonus.map(s=>stRow(s.name===S.me,s.rank,s.name,s.bonus,maxBonus,'#3D7FA8','')).join('');
+  const exactRows=byExact.map(s=>stRow(s.name===S.me,s.rank,s.name,s.exact,maxExact,'#A84040','')).join('');
 
-  const headers2=[{label:'#',w:'22px'},{label:'Participante',w:'70px'},{label:'',w:'auto'},{label:'N',right:true,w:'28px'}];
+  const headers2=[{label:'#',w:'22px'},{label:'Participante',w:'70px'},{label:'N',right:true,w:'28px'},{label:''}];
 
   // Campeón pronosticado (use all matches, all preds)
   const finalMatch=S.matches.find(m=>m.ronda==='F');
@@ -1321,11 +1320,11 @@ function renderStats(){
       return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);background:${bg}">
         <td style="padding:3px 6px;font-size:9px;color:var(--txt3);text-align:center">${i+1}</td>
         <td style="padding:3px 6px;font-size:11px;color:var(--txt);width:90px;min-width:90px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${flagHtml}${abbr(team)}</td>
-        <td style="padding:3px 6px;width:100%"><div style="height:5px;background:var(--border);border-radius:0;overflow:hidden"><div style="height:100%;width:${pct}%;background:#B8902A"></div></div></td>
-        <td style="padding:3px 8px;text-align:right;font-size:11px;font-weight:700;color:var(--amber)">${n}</td>
+        <td style="padding:3px 8px;text-align:right;font-size:12px;font-weight:700;color:#C8961E;width:28px">${n}</td>
+        <td style="padding:3px 8px 3px 2px"><div style="height:6px;background:var(--border);border-radius:0;overflow:hidden;min-width:50px"><div style="height:100%;width:${pct}%;background:#C8961E"></div></div></td>
       </tr>`;
     }).join('');
-  const champCard=stTbl('Campeón pronosticado','🏆',[{label:'#',w:'22px'},{label:'Equipo'},{label:'',w:'80px'},{label:'N',right:true,w:'28px'}],
+  const champCard=stTbl('Campeón pronosticado','🏆',[{label:'#',w:'22px'},{label:'Equipo'},{label:'N',right:true,w:'28px'},{label:''}],
     champRows||`<tr><td colspan="4" style="padding:8px;text-align:center;color:var(--txt3);font-size:11px">Sin datos</td></tr>`);
 
   // Triunfos pronosticados por equipo (all matches, all preds — count ganador picks)
@@ -1349,11 +1348,11 @@ function renderStats(){
       return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);background:${bg}">
         <td style="padding:3px 6px;font-size:9px;color:var(--txt3);text-align:center">${i+1}</td>
         <td style="padding:3px 6px;font-size:11px;color:var(--txt);width:90px;min-width:90px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${flagHtml}${abbr(team)}</td>
-        <td style="padding:3px 6px;width:100%"><div style="height:5px;background:var(--border);border-radius:0;overflow:hidden"><div style="height:100%;width:${pct}%;background:#3A9468"></div></div></td>
-        <td style="padding:3px 8px;text-align:right;font-size:11px;font-weight:700;color:var(--green)">${n}</td>
+        <td style="padding:3px 8px;text-align:right;font-size:12px;font-weight:700;color:#2EA870;width:28px">${n}</td>
+        <td style="padding:3px 8px 3px 2px"><div style="height:6px;background:var(--border);border-radius:0;overflow:hidden;min-width:50px"><div style="height:100%;width:${pct}%;background:#2EA870"></div></div></td>
       </tr>`;
     }).join('');
-  const winsCard=stTbl('Triunfos pronosticados (total)','⚽',[{label:'#',w:'22px'},{label:'Equipo'},{label:'',w:'80px'},{label:'N',right:true,w:'28px'}],
+  const winsCard=stTbl('Triunfos pronosticados (total)','⚽',[{label:'#',w:'22px'},{label:'Equipo'},{label:'N',right:true,w:'28px'},{label:''}],
     winRows||`<tr><td colspan="4" style="padding:8px;text-align:center;color:var(--txt3);font-size:11px">Sin datos</td></tr>`);
 
   if(!played.length){
