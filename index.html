@@ -202,8 +202,7 @@ body{
 .rank-tbl thead th.num{text-align:right}
 .rank-tbl tbody tr{border-bottom:1px solid rgba(255,255,255,.03);cursor:pointer;transition:background .1s}
 .rank-tbl tbody tr:hover td{background:var(--surface2)!important}
-.rank-tbl tbody tr.is-me td{background:rgba(59,130,246,.07)!important}
-.rank-tbl tbody tr.is-me .rtd-name{color:#7BAED4;font-weight:600}
+.rank-tbl tbody tr.is-me td{background:rgba(59,130,246,.08)!important}
 .rtd-pos{padding:3px 4px;width:22px;font-size:9px;color:var(--txt3);text-align:center}
 .rtd-name{padding:3px 4px;font-size:11px;font-weight:500;color:var(--txt);white-space:nowrap;width:70px;min-width:70px;max-width:70px;overflow:hidden;text-overflow:ellipsis}
 .rtd-num{padding:3px 4px;text-align:center;font-size:11px;font-weight:700;white-space:nowrap;width:30px}
@@ -212,7 +211,7 @@ body{
 .rtd-b{color:#5B7BA8}
 .rtd-bar{padding:3px 8px 3px 2px}
 .bar-cell{height:5px;background:var(--border);border-radius:0;overflow:hidden}
-.bar-cell-fill{height:100%;border-radius:0;background:rgba(200,155,50,.7);transition:width .3s}
+.bar-cell-fill{height:100%;border-radius:0;background:var(--amber);transition:width .3s}
 
 /* ════════════════════════════════════════════════════
    TAB 2: LLAVE (bracket)
@@ -228,13 +227,6 @@ body{
   display:flex;gap:0;
   min-width:860px;
   position:relative;
-}
-.bracket-svg{
-  position:absolute;
-  top:0;left:0;
-  width:100%;height:100%;
-  pointer-events:none;
-  overflow:visible;
 }
 .bracket-round{
   display:flex;flex-direction:column;
@@ -411,8 +403,7 @@ body{
 .preds-tbl thead th.c{text-align:center}
 .preds-tbl tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:filter .1s}
 .preds-tbl tbody tr:hover{filter:brightness(1.12)}
-.preds-tbl tbody tr.is-me td{font-weight:700;background:rgba(59,130,246,.07)!important}
-.preds-tbl tbody tr.is-me .ptd-name{color:#7BAED4!important}
+.preds-tbl tbody tr.is-me td{background:rgba(59,130,246,.08)!important;font-weight:600}
 .preds-tbl tbody tr.pred-local td{background:#1E222A}
 .preds-tbl tbody tr.pred-empate td{background:#191C22}
 .preds-tbl tbody tr.pred-visitor td{background:#171A20}
@@ -500,7 +491,7 @@ body{
 .stat-row:last-child{border-bottom:none}
 .stat-pos{font-size:10px;color:var(--txt3);width:18px;flex-shrink:0;text-align:center}
 .stat-name{flex:1;font-size:13px;font-weight:500;color:var(--txt)}
-.stat-row.is-me .stat-name{color:var(--blue)}
+
 .stat-bar-wrap{width:80px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;flex-shrink:0}
 .stat-bar{height:100%;border-radius:3px}
 .stat-val{font-size:12px;font-weight:700;min-width:28px;text-align:right;flex-shrink:0}
@@ -596,7 +587,7 @@ body{
     <div class="tab-pane" id="pane-llave">
       <div class="bracket-scroll" id="bracket-scroll">
         <div class="bracket-grid" id="bracket-grid"></div>
-        <svg class="bracket-svg" id="bracket-svg"></svg>
+
       </div>
     </div>
 
@@ -942,7 +933,7 @@ function renderBracket(){
       // Top-n for pending slots
       let topNRow='';
       if(!played&&topN>0){
-        const tLines=S.parts.filter(p=>p.rank<=topN).map(p=>{
+        const tLines=S.parts.filter(p=>p.rank<=topN).slice(0,topN).map(p=>{
           const pr2=(S.preds[predId]||{})[p.name];
           if(!pr2||pr2.l===null)return'';
           const ganStr=pr2.gan?`<span style="color:var(--txt3)">${pr2.gan.substring(0,8)}</span>`:'';
@@ -980,93 +971,8 @@ function renderBracket(){
     grid.appendChild(col);
   });
 
-  // Draw connector lines after layout settles
-  requestAnimationFrame(()=>requestAnimationFrame(drawBracketLines));
 }
 
-/* ════════════════════════════════════════════════
-   BRACKET CONNECTOR LINES
-════════════════════════════════════════════════ */
-function drawBracketLines(){
-  const svg = document.getElementById('bracket-svg');
-  const grid = document.getElementById('bracket-grid');
-  if(!svg||!grid) return;
-  svg.innerHTML = '';
-
-  const gridRect = grid.getBoundingClientRect();
-
-  // Bracket wiring: [srcA, srcB] → dst
-  // slot IDs: R32=1-16, R16=17-24, QF=25-28, SF=29-30, 3P=31, F=32
-  const WIRING = [
-    // R32 → R16
-    {a:1,  b:4,  dst:17}, // Oct1: M1+M4 → Oct1
-    {a:2,  b:5,  dst:18}, // Oct2: M2+M5 → Oct2
-    {a:3,  b:6,  dst:19}, // Oct3: M3+M6 → Oct3
-    {a:7,  b:8,  dst:20}, // Oct4: M7+M8 → Oct4
-    {a:10, b:9,  dst:21}, // Oct5: M10+M9 → Oct5
-    {a:12, b:11, dst:22}, // Oct6: M12+M11 → Oct6
-    {a:13, b:16, dst:23}, // Oct7: M13+M16 → Oct7
-    {a:15, b:14, dst:24}, // Oct8: M15+M14 → Oct8
-    // R16 → QF
-    {a:19, b:17, dst:25}, // QF1
-    {a:22, b:21, dst:26}, // QF2
-    {a:18, b:20, dst:27}, // QF3
-    {a:24, b:23, dst:28}, // QF4
-    // QF → SF
-    {a:25, b:26, dst:29}, // SF1
-    {a:27, b:28, dst:30}, // SF2
-    // SF → 3P (losers) and Final
-    {a:29, b:30, dst:32}, // Final
-    {a:29, b:30, dst:31}, // 3er lugar (losers — same sources, different dst)
-  ];
-
-  function slotMidRight(sid){
-    const el = grid.querySelector(`[data-sid="${sid}"]`);
-    if(!el) return null;
-    const r = el.getBoundingClientRect();
-    return {
-      x: r.right - gridRect.left,
-      y: (r.top + r.bottom) / 2 - gridRect.top,
-    };
-  }
-  function slotMidLeft(sid){
-    const el = grid.querySelector(`[data-sid="${sid}"]`);
-    if(!el) return null;
-    const r = el.getBoundingClientRect();
-    return {
-      x: r.left - gridRect.left,
-      y: (r.top + r.bottom) / 2 - gridRect.top,
-    };
-  }
-
-  const LINE_COLOR = 'rgba(255,255,255,0.08)';
-  const LINE_W = 1;
-
-  WIRING.forEach(({a, b, dst})=>{
-    const pA = slotMidRight(a);
-    const pB = slotMidRight(b);
-    const pDst = slotMidLeft(dst);
-    if(!pA || !pB || !pDst) return;
-
-    // Midpoint between the two source slots (horizontal midpoint)
-    const midX = (pA.x + pDst.x) / 2;
-
-    // Line from A right → midX → merge → dst left
-    // Using step/elbow: A right → midX horizontal → vertical to merge → dstLeft
-    const mergeY = (pA.y + pB.y) / 2;
-
-    // Path A: right edge of A → elbow → merge point
-    svg.innerHTML += `<path d="M${pA.x},${pA.y} H${midX} V${mergeY}" fill="none" stroke="${LINE_COLOR}" stroke-width="${LINE_W}"/>`;
-    // Path B: right edge of B → elbow → merge point
-    svg.innerHTML += `<path d="M${pB.x},${pB.y} H${midX} V${mergeY}" fill="none" stroke="${LINE_COLOR}" stroke-width="${LINE_W}"/>`;
-    // Path merge → dst left
-    svg.innerHTML += `<path d="M${midX},${mergeY} H${pDst.x}" fill="none" stroke="${LINE_COLOR}" stroke-width="${LINE_W}"/>`;
-  });
-
-  // Update SVG size to match grid
-  svg.setAttribute('width', gridRect.width);
-  svg.setAttribute('height', gridRect.height);
-}
 
 /* ════════════════════════════════════════════════
    TAB 3: PARTIDO
@@ -1360,10 +1266,10 @@ function renderStats(){
 
   function stRow(isMe,rank,name,val,maxVal,barColor,extra){
     const barW=maxVal>0?Math.round((val/maxVal)*100):0;
-    const bg=isMe?'background:rgba(59,130,246,.07)':'';
+    const bg=isMe?'background:rgba(59,130,246,.08)':'';
     return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);${bg}" class="${isMe?'is-me':''}">
       <td style="padding:3px 6px;color:var(--txt3);font-size:9px;text-align:center">${rank}°</td>
-      <td style="padding:3px 6px;font-size:11px;font-weight:${isMe?700:500};color:${isMe?'var(--blue)':'var(--txt)'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:70px;min-width:70px;max-width:70px">${name}</td>
+      <td style="padding:3px 6px;font-size:11px;font-weight:${isMe?700:500};color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:70px;min-width:70px;max-width:70px">${name}</td>
       <td style="padding:3px 6px"><div style="height:5px;background:var(--border);border-radius:0;overflow:hidden"><div style="height:100%;width:${barW}%;background:${barColor}"></div></div></td>
       <td style="padding:3px 8px;text-align:right;font-size:11px;font-weight:700;color:${barColor}">${val}</td>
       ${extra||''}
@@ -1390,8 +1296,8 @@ function renderStats(){
   const byBonus=[...stats].sort((a,b)=>b.bonus-a.bonus||a.rank-b.rank);
   const byExact=[...stats].sort((a,b)=>b.exact-a.exact||a.rank-b.rank);
 
-  const bonusRows=byBonus.map(s=>stRow(s.name===S.me,s.rank,s.name,s.bonus,maxBonus,'#4A7090','')).join('');
-  const exactRows=byExact.map(s=>stRow(s.name===S.me,s.rank,s.name,s.exact,maxExact,'#8A5050','')).join('');
+  const bonusRows=byBonus.map(s=>stRow(s.name===S.me,s.rank,s.name,s.bonus,maxBonus,'#4A80A0','')).join('');
+  const exactRows=byExact.map(s=>stRow(s.name===S.me,s.rank,s.name,s.exact,maxExact,'#9A5555','')).join('');
 
   const headers2=[{label:'#',w:'22px'},{label:'Participante',w:'70px'},{label:'',w:'auto'},{label:'N',right:true,w:'28px'}];
 
@@ -1415,7 +1321,7 @@ function renderStats(){
       return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);background:${bg}">
         <td style="padding:3px 6px;font-size:9px;color:var(--txt3);text-align:center">${i+1}</td>
         <td style="padding:3px 6px;font-size:11px;color:var(--txt);width:90px;min-width:90px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${flagHtml}${abbr(team)}</td>
-        <td style="padding:3px 6px;width:100%"><div style="height:5px;background:var(--border);border-radius:0;overflow:hidden"><div style="height:100%;width:${pct}%;background:#9A7A30"></div></div></td>
+        <td style="padding:3px 6px;width:100%"><div style="height:5px;background:var(--border);border-radius:0;overflow:hidden"><div style="height:100%;width:${pct}%;background:#B8902A"></div></div></td>
         <td style="padding:3px 8px;text-align:right;font-size:11px;font-weight:700;color:var(--amber)">${n}</td>
       </tr>`;
     }).join('');
@@ -1443,7 +1349,7 @@ function renderStats(){
       return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);background:${bg}">
         <td style="padding:3px 6px;font-size:9px;color:var(--txt3);text-align:center">${i+1}</td>
         <td style="padding:3px 6px;font-size:11px;color:var(--txt);width:90px;min-width:90px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${flagHtml}${abbr(team)}</td>
-        <td style="padding:3px 6px;width:100%"><div style="height:5px;background:var(--border);border-radius:0;overflow:hidden"><div style="height:100%;width:${pct}%;background:#2E7A5A"></div></div></td>
+        <td style="padding:3px 6px;width:100%"><div style="height:5px;background:var(--border);border-radius:0;overflow:hidden"><div style="height:100%;width:${pct}%;background:#3A9468"></div></div></td>
         <td style="padding:3px 8px;text-align:right;font-size:11px;font-weight:700;color:var(--green)">${n}</td>
       </tr>`;
     }).join('');
@@ -1506,9 +1412,6 @@ function switchTab(id,btn){
 ════════════════════════════════════════════════ */
 if(CFG.REFRESH>0)setInterval(loadData,CFG.REFRESH*60*1000);
 
-// Redraw bracket lines on resize
-let _rbt;
-window.addEventListener('resize',()=>{clearTimeout(_rbt);_rbt=setTimeout(drawBracketLines,200);});
 
 /* BOOT */
 loadData();
