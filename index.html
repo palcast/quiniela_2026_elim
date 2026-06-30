@@ -1335,10 +1335,52 @@ function renderStats(){
   const byBonus=[...stats].sort((a,b)=>b.bonus-a.bonus||a.rank-b.rank);
   const byExact=[...stats].sort((a,b)=>b.exact-a.exact||a.rank-b.rank);
 
-  const bonusRows=byBonus.map(s=>stRow(s.name===S.me,s.rank,s.name,s.bonus,maxBonus,'#3D7FA8','')).join('');
   const exactRows=byExact.map(s=>stRow(s.name===S.me,s.rank,s.name,s.exact,maxExact,'#A84040','')).join('');
 
   const headers2=[{label:'#',w:'22px'},{label:'Participante',w:'70px'},{label:'N',right:true,w:'28px'},{label:''}];
+
+  // ── Aciertos selecciones ganadoras — desglosado por ronda ──
+  const BONUS_ROUNDS=[
+    {key:'R32',label:'R32'},
+    {key:'R16',label:'Oct'},
+    {key:'QF', label:'Cto'},
+    {key:'SF', label:'Semi'},
+    {key:'3P', label:'3er'},
+    {key:'F',  label:'Final'},
+  ];
+  const bonusStats2=S.parts.map(p=>{
+    let total=0;
+    const byRnd={};
+    BONUS_ROUNDS.forEach(r=>byRnd[r.key]=0);
+    played.forEach(m=>{
+      const pr=(S.preds[m.id]||{})[p.name];
+      if(!pr||pr.l===null)return;
+      const pb=pr.pb!==null?pr.pb:(pr.gan&&m.ganador&&pr.gan===m.ganador?1:0);
+      if(pb>0){
+        total++;
+        if(byRnd[m.ronda]!==undefined)byRnd[m.ronda]++;
+      }
+    });
+    return{...p,total,byRnd};
+  });
+  const bonusHeaders2=[
+    {label:'#',w:'22px'},
+    {label:'Participante',w:'70px'},
+    {label:'Total',right:true,w:'28px'},
+    ...BONUS_ROUNDS.map(r=>({label:r.label,right:true,w:'28px'})),
+  ];
+  const byTotal=[...bonusStats2].sort((a,b)=>b.total-a.total||a.rank-b.rank);
+  const bonusRows2=byTotal.map((s,i)=>{
+    const isMe=s.name===S.me;
+    const bg=isMe?'background:rgba(59,130,246,.08)':((i%2===0)?'background:var(--surface)':'background:var(--bg)');
+    const rndCells=BONUS_ROUNDS.map(r=>`<td style="padding:3px 4px;text-align:center;font-size:11px;font-weight:600;color:${s.byRnd[r.key]>0?'var(--txt)':'var(--txt3)'}">${s.byRnd[r.key]||'—'}</td>`).join('');
+    return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);${bg}">
+      <td style="padding:3px 4px;font-size:9px;color:var(--txt3);text-align:center">${s.rank}°</td>
+      <td style="padding:3px 6px;font-size:11px;font-weight:${isMe?700:500};color:var(--txt);width:70px;min-width:70px;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.name}</td>
+      <td style="padding:3px 6px;text-align:center;font-size:12px;font-weight:700;color:#3D7FA8">${s.total||'—'}</td>
+      ${rndCells}
+    </tr>`;
+  }).join('');
 
   // Campeón pronosticado (use all matches, all preds)
   const finalMatch=S.matches.find(m=>m.ronda==='F');
@@ -1395,20 +1437,89 @@ function renderStats(){
   const winsCard=stTbl('Triunfos pronosticados (total)','⚽',[{label:'#',w:'22px'},{label:'Equipo'},{label:'N',right:true,w:'28px'},{label:''}],
     winRows||`<tr><td colspan="4" style="padding:8px;text-align:center;color:var(--txt3);font-size:11px">Sin datos</td></tr>`);
 
-  if(!played.length){
-    cont.innerHTML=champCard+winsCard;
-    return;
-  }
+  // ── Equipos vivos por ronda ──
+  // "Vivo" = participante pronosticó ese equipo como ganador de esa ronda
+  //          Y ese equipo NO ha sido eliminado en la realidad (no aparece como perdedor en ningún partido jugado)
+  const ROUNDS_LIVE=[
+    {key:'R16', label:'Octavos',  matchIds:['17','18','19','20','21','22','23','24']},
+    {key:'QF',  label:'Cuartos',  matchIds:['25','26','27','28']},
+    {key:'SF',  label:'Semi',     matchIds:['29','30']},
+    {key:'F',   label:'Final',    matchIds:['32']},
+  ];
+
+  // Build set of teams already eliminated (appeared as perdedor in any played match)
+  const eliminated=new Set();
+  S.matches.forEach(m=>{
+    if(m.gl!==null&&m.perdedor)eliminated.add(m.perdedor);
+  });
+  // Also add losers derived from ganador (for matches that have ganador but no perdedor field)
+  S.matches.forEach(m=>{
+    if(m.gl===null)return;
+    if(m.ganador){
+      const loser=m.ganador===m.local?m.visitante:m.local;
+      if(loser)eliminated.add(loser);
+    }
+  });
+
+  // For each participant × round: count how many teams they predicted as ganador
+  // in that round's matches, where that team is still NOT eliminated
+  const liveStats=S.parts.map(p=>{
+    const byRound=ROUNDS_LIVE.map(rnd=>{
+      // Find the real matches for this round
+      const roundMatches=S.matches.filter(m=>m.ronda===rnd.key);
+      // Also check synthetic IDs if match not yet in sheet
+      const allIds=[...new Set([...roundMatches.map(m=>m.id),...rnd.matchIds])];
+      let alive=0;
+      allIds.forEach(mid=>{
+        const pr=(S.preds[mid]||{})[p.name];
+        if(!pr||!pr.gan)return;
+        // Team is "alive" if it hasn't been eliminated yet
+        if(!eliminated.has(pr.gan))alive++;
+      });
+      return alive;
+    });
+    return{...p,byRound};
+  });
+
+  const liveHdr=`<tr>
+    <th style="background:var(--surface2);color:var(--txt3);font-size:9px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:4px 4px;border-bottom:1px solid var(--border2);text-align:center;width:22px">#</th>
+    <th style="background:var(--surface2);color:var(--txt3);font-size:9px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:4px 6px;border-bottom:1px solid var(--border2);text-align:left">Participante</th>
+    ${ROUNDS_LIVE.map(r=>`<th style="background:var(--surface2);color:var(--txt3);font-size:9px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:4px 4px;border-bottom:1px solid var(--border2);text-align:center">${r.label}</th>`).join('')}
+  </tr>`;
+  const maxPerRound=[8,4,2,1];
+  const liveRows=liveStats.sort((a,b)=>a.rank-b.rank).map((s,i)=>{
+    const isMe=s.name===S.me;
+    const bg=isMe?'background:rgba(59,130,246,.08)':((i%2===0)?'background:var(--surface)':'background:var(--bg)');
+    const cells=s.byRound.map((n,ri)=>{
+      const max=maxPerRound[ri];
+      const color=n===0?'var(--txt3)':(n===max?'#3A9468':'#C8961E');
+      return`<td style="padding:3px 4px;text-align:center;font-size:12px;font-weight:700;color:${color}">${n}</td>`;
+    }).join('');
+    return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);${bg}">
+      <td style="padding:3px 4px;font-size:9px;color:var(--txt3);text-align:center">${s.rank}°</td>
+      <td style="padding:3px 6px;font-size:11px;font-weight:${isMe?700:500};color:var(--txt);width:70px;min-width:70px;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.name}</td>
+      ${cells}
+    </tr>`;
+  }).join('');
+  const liveCard=`<div class="stat-card" style="padding:0;overflow:hidden;margin-bottom:10px">
+    <div style="padding:8px 10px 4px;font-size:10px;font-weight:700;color:var(--txt3);letter-spacing:.08em;text-transform:uppercase">🟢 Equipos vivos por ronda</div>
+    <div style="padding:0 10px 6px;font-size:9px;color:var(--txt3)">Equipos que el participante pronosticó ganar esa ronda y aún no han sido eliminados</div>
+    <table style="width:100%;border-collapse:collapse;font-size:11px">
+      <thead>${liveHdr}</thead>
+      <tbody>${liveRows}</tbody>
+    </table>
+  </div>`;
 
   renderBolsa();
 
   if(!played.length){
-    cont.innerHTML=champCard+winsCard;
+    cont.innerHTML=liveCard+champCard+winsCard;
     return;
   }
 
   cont.innerHTML=
-    stTbl('Aciertos a la selección ganadora','🏳️',headers2,bonusRows)+
+    liveCard+
+    stTbl('Aciertos selecciones ganadoras','🏳️',bonusHeaders2,bonusRows2)+
     stTbl('Marcadores exactos','🎯',headers2,exactRows)+
     champCard+winsCard;
 }
