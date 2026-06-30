@@ -1395,160 +1395,22 @@ function renderStats(){
   const winsCard=stTbl('Triunfos pronosticados (total)','⚽',[{label:'#',w:'22px'},{label:'Equipo'},{label:'N',right:true,w:'28px'},{label:''}],
     winRows||`<tr><td colspan="4" style="padding:8px;text-align:center;color:var(--txt3);font-size:11px">Sin datos</td></tr>`);
 
-  // ── Semifinalista pronosticado ──
-  // A participant "predicts X reaches semis" if X is the team they picked as winner (gan)
-  // in the QF match that feeds into that SF slot.
-  const sfCounts2={};
-  S.matches.filter(m=>m.ronda==='QF').forEach(m=>{
-    Object.values(S.preds[m.id]||{}).forEach(pr=>{
-      if(pr&&pr.gan)sfCounts2[pr.gan]=(sfCounts2[pr.gan]||0)+1;
-    });
-  });
-  const sfRows=Object.entries(sfCounts2).sort((a,b)=>b[1]-a[1])
-    .map(([team,n],i)=>{
-      const code=F[team]||'';
-      const flagHtml=code?`<img style="width:14px;height:14px;border-radius:50%;object-fit:cover;border:1px solid var(--border2);vertical-align:middle;margin-right:4px" src="https://flagcdn.com/${code}.svg" onerror="this.style.display='none'" alt="">`:'';
-      const maxW=Math.max(...Object.values(sfCounts2),1);
-      const pct=Math.round(n/maxW*100);
-      const bg=(i%2===0)?'var(--surface)':'var(--bg)';
-      return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);background:${bg}">
-        <td style="padding:3px 6px;font-size:9px;color:var(--txt3);text-align:center">${i+1}</td>
-        <td style="padding:3px 6px;font-size:11px;color:var(--txt);width:90px;min-width:90px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${flagHtml}${abbr(team)}</td>
-        <td style="padding:3px 8px;text-align:right;font-size:12px;font-weight:700;color:#9568B8;width:28px">${n}</td>
-        <td style="padding:3px 8px 3px 2px"><div style="height:6px;background:var(--border);border-radius:0;overflow:hidden;min-width:50px"><div style="height:100%;width:${pct}%;background:#9568B8"></div></div></td>
-      </tr>`;
-    }).join('');
-  const sfCard=stTbl('Semifinalista pronosticado','🎟️',[{label:'#',w:'22px'},{label:'Equipo'},{label:'N',right:true,w:'28px'},{label:''}],
-    sfRows||`<tr><td colspan="4" style="padding:8px;text-align:center;color:var(--txt3);font-size:11px">Sin datos</td></tr>`);
-
-  // ── Equipo más sobreestimado / subestimado ──
-  // "Predicted advances" = count of times a team was picked as ganador (pr.gan) across all preds
-  // "Real advances" = count of rounds the team actually won (appears as m.ganador across played matches)
-  const predictedAdvances={};
-  Object.keys(S.preds).forEach(mid=>{
-    Object.values(S.preds[mid]).forEach(pr=>{
-      if(pr&&pr.gan)predictedAdvances[pr.gan]=(predictedAdvances[pr.gan]||0)+1;
-    });
-  });
-  const realAdvances={};
-  played.forEach(m=>{
-    if(m.ganador)realAdvances[m.ganador]=(realAdvances[m.ganador]||0)+1;
-  });
-  // Normalize: predicted is summed across ALL participants (so divide by nParts for a fair "avg picks per round")
-  const nParts=S.parts.length||1;
-  const allTeams=new Set([...Object.keys(predictedAdvances),...Object.keys(realAdvances)]);
-  const overUnder=[...allTeams].map(team=>{
-    const predAvg=(predictedAdvances[team]||0)/nParts; // avg rounds-won predicted per participant
-    const real=realAdvances[team]||0;
-    return{team,predAvg,real,diff:predAvg-real};
-  }).filter(t=>t.predAvg>0||t.real>0);
-
-  const overestimated=[...overUnder].sort((a,b)=>b.diff-a.diff).slice(0,8);
-  const underestimated=[...overUnder].sort((a,b)=>a.diff-b.diff).slice(0,8);
-
-  function ouRow(t,i,color){
-    const code=F[t.team]||'';
-    const flagHtml=code?`<img style="width:14px;height:14px;border-radius:50%;object-fit:cover;border:1px solid var(--border2);vertical-align:middle;margin-right:4px" src="https://flagcdn.com/${code}.svg" onerror="this.style.display='none'" alt="">`:'';
-    const bg=(i%2===0)?'var(--surface)':'var(--bg)';
-    const sign=t.diff>0?'+':'';
-    return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);background:${bg}">
-      <td style="padding:3px 6px;font-size:9px;color:var(--txt3);text-align:center">${i+1}</td>
-      <td style="padding:3px 6px;font-size:11px;color:var(--txt);width:90px;min-width:90px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${flagHtml}${abbr(t.team)}</td>
-      <td style="padding:3px 6px;text-align:center;font-size:10px;color:var(--txt3)">${t.predAvg.toFixed(2)}</td>
-      <td style="padding:3px 6px;text-align:center;font-size:10px;color:var(--txt3)">${t.real}</td>
-      <td style="padding:3px 8px;text-align:right;font-size:12px;font-weight:700;color:${color}">${sign}${t.diff.toFixed(2)}</td>
-    </tr>`;
-  }
-  const ouHeaders=`<tr><th style="background:var(--surface2);color:var(--txt3);font-size:9px;font-weight:600;padding:4px 6px;border-bottom:1px solid var(--border2);text-align:center;width:22px">#</th><th style="background:var(--surface2);color:var(--txt3);font-size:9px;font-weight:600;padding:4px 6px;border-bottom:1px solid var(--border2);text-align:left">Equipo</th><th style="background:var(--surface2);color:var(--txt3);font-size:9px;font-weight:600;padding:4px 6px;border-bottom:1px solid var(--border2);text-align:center" title="Promedio de veces pronosticado como ganador por participante">Pron.</th><th style="background:var(--surface2);color:var(--txt3);font-size:9px;font-weight:600;padding:4px 6px;border-bottom:1px solid var(--border2);text-align:center" title="Rondas realmente ganadas">Real</th><th style="background:var(--surface2);color:var(--txt3);font-size:9px;font-weight:600;padding:4px 6px;border-bottom:1px solid var(--border2);text-align:right">Dif.</th></tr>`;
-
-  const overCard=`<div class="stat-card" style="padding:0;overflow:hidden;margin-bottom:10px">
-    <div style="padding:8px 10px 4px;font-size:10px;font-weight:700;color:var(--txt3);letter-spacing:.08em;text-transform:uppercase">📈 Equipos más sobreestimados</div>
-    <div style="padding:0 10px 6px;font-size:9px;color:var(--txt3)">La gente confió más en ellos de lo que el torneo respaldó</div>
-    <table style="width:100%;border-collapse:collapse;font-size:11px">
-      <thead>${ouHeaders}</thead>
-      <tbody>${overestimated.length?overestimated.map((t,i)=>ouRow(t,i,'#A84040')).join(''):'<tr><td colspan="5" style="padding:8px;text-align:center;color:var(--txt3);font-size:11px">Sin datos</td></tr>'}</tbody>
-    </table>
-  </div>`;
-  const underCard=`<div class="stat-card" style="padding:0;overflow:hidden;margin-bottom:10px">
-    <div style="padding:8px 10px 4px;font-size:10px;font-weight:700;color:var(--txt3);letter-spacing:.08em;text-transform:uppercase">📉 Equipos más subestimados</div>
-    <div style="padding:0 10px 6px;font-size:9px;color:var(--txt3)">Avanzaron más de lo que la gente esperaba</div>
-    <table style="width:100%;border-collapse:collapse;font-size:11px">
-      <thead>${ouHeaders}</thead>
-      <tbody>${underestimated.length?underestimated.map((t,i)=>ouRow(t,i,'#3A9468')).join(''):'<tr><td colspan="5" style="padding:8px;text-align:center;color:var(--txt3);font-size:11px">Sin datos</td></tr>'}</tbody>
-    </table>
-  </div>`;
-
-  // ── Equipos vivos por ronda (real vs pronóstico) por participante ──
-  // For each round starting at R16, count how many teams in the participant's bracket
-  // (the team they predicted to WIN that round's match) match the real winner of that match.
-  const ROUNDS_LIVE=[
-    {key:'R16',label:'Octavos'},
-    {key:'QF', label:'Cuartos'},
-    {key:'SF', label:'Semis'},
-    {key:'F',  label:'Final'},
-  ];
-  const liveStats=S.parts.map(p=>{
-    const byRound={};
-    ROUNDS_LIVE.forEach(r=>{
-      const ms=S.matches.filter(m=>m.ronda===r.key&&m.gl!==null); // only played matches count as "resolved"
-      let hits=0,total=0;
-      ms.forEach(m=>{
-        const pr=(S.preds[m.id]||{})[p.name];
-        if(!pr||!pr.gan)return;
-        total++;
-        if(m.ganador&&pr.gan===m.ganador)hits++;
-      });
-      byRound[r.key]={hits,total};
-    });
-    return{...p,byRound};
-  });
-  const anyRoundPlayed=ROUNDS_LIVE.some(r=>S.matches.some(m=>m.ronda===r.key&&m.gl!==null));
-  let liveCard='';
-  if(anyRoundPlayed){
-    const liveRowsHtml=liveStats.sort((a,b)=>a.rank-b.rank).map((s,i)=>{
-      const isMe=s.name===S.me;
-      const bg=isMe?'background:rgba(59,130,246,.08)':((i%2===0)?'background:var(--surface)':'background:var(--bg)');
-      const cells=ROUNDS_LIVE.map(r=>{
-        const{hits,total}=s.byRound[r.key];
-        if(total===0)return`<td style="padding:3px 4px;text-align:center;font-size:10px;color:var(--txt3)">—</td>`;
-        const color=hits===total?'#3A9468':(hits===0?'#A84040':'#C8961E');
-        return`<td style="padding:3px 4px;text-align:center;font-size:11px;font-weight:700;color:${color}">${hits}/${total}</td>`;
-      }).join('');
-      return`<tr style="border-bottom:1px solid rgba(255,255,255,.03);${bg}">
-        <td style="padding:3px 6px;font-size:9px;color:var(--txt3);text-align:center">${s.rank}°</td>
-        <td style="padding:3px 6px;font-size:11px;color:var(--txt);width:70px;min-width:70px;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:${isMe?700:500}">${s.name}</td>
-        ${cells}
-      </tr>`;
-    }).join('');
-    const liveHeaders=`<tr>
-      <th style="background:var(--surface2);color:var(--txt3);font-size:9px;font-weight:600;padding:4px 6px;border-bottom:1px solid var(--border2);text-align:center;width:22px">#</th>
-      <th style="background:var(--surface2);color:var(--txt3);font-size:9px;font-weight:600;padding:4px 6px;border-bottom:1px solid var(--border2);text-align:left;width:70px">Participante</th>
-      ${ROUNDS_LIVE.map(r=>`<th style="background:var(--surface2);color:var(--txt3);font-size:9px;font-weight:600;padding:4px 4px;border-bottom:1px solid var(--border2);text-align:center">${r.label}</th>`).join('')}
-    </tr>`;
-    liveCard=`<div class="stat-card" style="padding:0;overflow:hidden;margin-bottom:10px">
-      <div style="padding:8px 10px 4px;font-size:10px;font-weight:700;color:var(--txt3);letter-spacing:.08em;text-transform:uppercase">🟢 Equipos vivos por ronda</div>
-      <div style="padding:0 10px 6px;font-size:9px;color:var(--txt3)">Aciertos de equipo ganador / partidos jugados en esa ronda</div>
-      <table style="width:100%;border-collapse:collapse;font-size:11px">
-        <thead>${liveHeaders}</thead>
-        <tbody>${liveRowsHtml}</tbody>
-      </table>
-    </div>`;
-  }
-
   if(!played.length){
+    cont.innerHTML=champCard+winsCard;
+    return;
+  }
+
   renderBolsa();
 
   if(!played.length){
-    cont.innerHTML=champCard+winsCard+sfCard;
+    cont.innerHTML=champCard+winsCard;
     return;
   }
 
   cont.innerHTML=
     stTbl('Aciertos a la selección ganadora','🏳️',headers2,bonusRows)+
     stTbl('Marcadores exactos','🎯',headers2,exactRows)+
-    liveCard+
-    champCard+winsCard+sfCard+
-    overCard+underCard;
+    champCard+winsCard;
 }
 
 function renderBolsa(){
