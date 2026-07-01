@@ -656,7 +656,7 @@ body{
    CONFIG
 ════════════════════════════════════════════════ */
 const CFG = {
-  SHEET_ID:  '1O2lxwWYe8DX80uW5PhBL2PWYSkY9sFcoEntV8MB-Usw',
+  SHEET_ID:  '1V5T_Hp1iBUwSDK2vcdbQ86mtniCTV4qk2SXswgesG0E',
   GID_M:     '2044441229',
   GID_P:     '675070228',
   GID_PR:    '852857498',
@@ -709,7 +709,7 @@ function ptsClass(pm,total){
 /* ════════════════════════════════════════════════
    STATE
 ════════════════════════════════════════════════ */
-const S={matches:[],parts:[],preds:{},bolsa:[],me:'',filter:'all'};
+const S={matches:[],parts:[],preds:{},bolsa:[],matchHora:{},me:'',filter:'all'};
 
 /* ════════════════════════════════════════════════
    CSV
@@ -772,6 +772,14 @@ async function loadData(){
         ptsExtra:parseInt(r.puntos_extra||0),
       };
     }).filter(m=>m.local);
+
+    // Build hora lookup for ALL match IDs (including those with undefined teams)
+    S.matchHora={};
+    mR.forEach(r=>{
+      const id=String(r.partido_id||r.id||'');
+      const hora=(r.fecha_hora_inicio||r.hora_inicio_utc||'').trim();
+      if(id&&hora)S.matchHora[id]=hora;
+    });
 
     S.preds={};
     prR.forEach(r=>{
@@ -991,8 +999,8 @@ function renderBracket(){
       } else {
         slot.onclick=()=>{const sel=document.getElementById('match-sel');if(sel){sel.value=String(sid);}switchTab('partido',document.getElementById('nav-partido'));renderMatchDetail();};
       }
-      // Show hora for R16+ — only from real match data in Sheet
-      const hora=(m&&m.hora&&rnd.key!=='R32')?m.hora:'';
+      // Show hora for R16+ — from real match or matchHora lookup (covers undefined-team slots)
+      const hora=(rnd.key!=='R32')?((m&&m.hora)||S.matchHora[String(sid)]||''):'';
       const horaHtml=hora?`<div style="font-size:8px;color:var(--txt3);padding:1px 8px;text-align:right;border-bottom:1px solid var(--border)">${hora}</div>`:'';
       slot.innerHTML=`
         ${horaHtml}
