@@ -939,13 +939,34 @@ function renderBracket(){
     const ms=S.matches.filter(m=>m.ronda===rnd.key);
     // Unified slot rendering: always render full set of slots per round
     // Map real matches by id for lookup
-    // Slot order derived from bracket (Final→Semis→Cuartos→Octavos→R32), top to bottom:
-    // SF1(29)→QF1(25)+QF2(26): Oct3(19)+Oct1(17) · Oct6(22)+Oct5(21)  → R32: 3,6·1,4 · 9,10·11,12(oct5=M10,M9;oct6=M12,M11)
-    // SF2(30)→QF3(27)+QF4(28): Oct2(18)+Oct4(20) · Oct8(24)+Oct7(23)  → R32: 2,5·7,8 · 15,14·13,16
+    // Slot order derived from bracket. Within each pair feeding a QF, sort by date (earlier first).
+    // QF1←Oct3(19)+Oct1(17), QF2←Oct6(22)+Oct5(21), QF3←Oct2(18)+Oct4(20), QF4←Oct8(24)+Oct7(23)
+    // R32 pairs follow same order as their Octavos match: Oct feeds from two R32 matches
+    //   Oct1(17): M1(1)+M4(4)   Oct3(19): M3(3)+M6(6)
+    //   Oct5(21): M10(10)+M9(9) Oct6(22): M12(12)+M11(11)
+    //   Oct2(18): M2(2)+M5(5)   Oct4(20): M7(7)+M8(8)
+    //   Oct8(24): M15(15)+M14(14) Oct7(23): M13(13)+M16(16)
+    const R16_PAIRS=[[19,17],[22,21],[18,20],[24,23]]; // each pair feeds one QF
+    const R32_FOR_OCT={17:[1,4],18:[2,5],19:[3,6],20:[7,8],21:[10,9],22:[12,11],23:[13,16],24:[15,14]};
+
+    function sortByHora(idA,idB){
+      const hA=S.matchHora[String(idA)]||'';
+      const hB=S.matchHora[String(idB)]||'';
+      return hA.localeCompare(hB); // lexicographic works since format is "DD Mon · HH:MM"
+    }
+
+    const orderedR16=[];
+    const orderedR32=[];
+    R16_PAIRS.forEach(([a,b])=>{
+      const [first,second]=sortByHora(a,b)<=0?[a,b]:[b,a];
+      orderedR16.push(first,second);
+      orderedR32.push(...(R32_FOR_OCT[first]||[]),...(R32_FOR_OCT[second]||[]));
+    });
+
     const SLOT_IDS={
-      R32: [3,6, 1,4, 10,9, 12,11, 2,5, 7,8, 15,14, 13,16],
-      R16: [19,17, 22,21, 18,20, 24,23],
-      QF:  [25,26, 27,28],
+      R32: orderedR32,
+      R16: orderedR16,
+      QF:  [25,26,27,28],
       SF:  [29,30],
       '3P':[31],
       F:   [32],
