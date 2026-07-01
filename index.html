@@ -656,7 +656,7 @@ body{
    CONFIG
 ════════════════════════════════════════════════ */
 const CFG = {
-  SHEET_ID:  '1V5T_Hp1iBUwSDK2vcdbQ86mtniCTV4qk2SXswgesG0E',
+  SHEET_ID:  '1O2lxwWYe8DX80uW5PhBL2PWYSkY9sFcoEntV8MB-Usw',
   GID_M:     '2044441229',
   GID_P:     '675070228',
   GID_PR:    '852857498',
@@ -1035,7 +1035,11 @@ function renderMatchDetail(){
   let m=S.matches.find(x=>x.id===id);
   if(!m){
     // Synthetic slot — show stub with predictions only
-    cont.innerHTML=`<div class="match-detail-hero"><div class="mdh-ronda" style="margin-bottom:8px">Partido aún no definido</div><div style="text-align:center;color:var(--txt3);font-size:12px">Los equipos se definirán conforme avance el torneo.</div></div>`;
+    const stubHora=S.matchHora[id]||'';
+    const _sid=parseInt(id);
+    const _ronda=_sid<=16?'R32':_sid<=24?'R16':_sid<=28?'QF':_sid<=30?'SF':_sid===31?'3P':'F';
+    const stubRondaLbl=RONDA_LBL[_ronda]||'';
+    cont.innerHTML=`<div class="match-detail-hero"><div class="mdh-ronda">${stubRondaLbl}${stubHora?' · '+stubHora:''}</div><div style="text-align:center;color:var(--txt3);font-size:12px;margin-top:6px">Los equipos se definirán conforme avance el torneo.</div></div>`;
     // Show predictions for this id
     const stubParts=[...S.parts].map(p=>{
       const pr=(S.preds[id]||{})[p.name];
