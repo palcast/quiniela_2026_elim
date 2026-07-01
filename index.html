@@ -866,7 +866,7 @@ function populateModals(){
     const tb=m?m.visitante||'TBD':'TBD';
     const o=document.createElement('option');
     o.value=m?m.id:slot.id;
-    o.textContent=`${RONDA_LBL[slot.ronda]||slot.ronda}${m&&m.hora?` · ${m.hora}`:''} · ${ta} vs ${tb}${pl?` (${m.gl}-${m.gv})`:''}`;
+    o.textContent=`${RONDA_LBL[slot.ronda]||slot.ronda}${(m&&m.hora)||S.matchHora[slot.id]?` · ${(m&&m.hora)||S.matchHora[slot.id]}`:''} · ${ta} vs ${tb}${pl?` (${m.gl}-${m.gv})`:''}`;
     ms2.appendChild(o);
   });
   if(prev2&&S.matches.find(m=>m.id===prev2)){ms2.value=prev2;}
