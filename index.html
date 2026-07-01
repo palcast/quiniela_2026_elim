@@ -771,7 +771,7 @@ async function loadData(){
         hora:(r.fecha_hora_inicio||r.hora_inicio_utc||'').trim(),
         ptsExtra:parseInt(r.puntos_extra||0),
       };
-    }).filter(m=>m.local);
+    }).filter(m=>m.local||m.visitante||m.hora);
 
     // Build hora lookup for ALL match IDs (including those with undefined teams)
     S.matchHora={};
@@ -1128,13 +1128,13 @@ function renderMatchDetail(){
       <div class="split-bar-row">
         <div class="sbl-icon" style="font-size:10px;color:var(--txt3);font-weight:700">E</div>
         <div class="sbl-lbl">Empate</div>
-        <div class="sbl-bar-bg"><div class="sbl-bar-fill" style="width:${pE}%;background:${realRes==='E'?'var(--green)':'var(--border2)'}"></div></div>
+        <div class="sbl-bar-bg"><div class="sbl-bar-fill" style="width:${pE}%;background:${realRes==='E'?'var(--green)':'var(--blue)'}"></div></div>
         <div class="sbl-n">${cE}</div>
       </div>
       <div class="split-bar-row">
         <div class="sbl-icon">${fimg(m.visitante,14)}</div>
         <div class="sbl-lbl" style="font-size:10px">${abbr(m.visitante)}</div>
-        <div class="sbl-bar-bg"><div class="sbl-bar-fill" style="width:${pV}%;background:${realRes==='V'?'var(--green)':'var(--amber)'}"></div></div>
+        <div class="sbl-bar-bg"><div class="sbl-bar-fill" style="width:${pV}%;background:${realRes==='V'?'var(--green)':'var(--blue)'}"></div></div>
         <div class="sbl-n">${cV}</div>
       </div>
     </div>`;
@@ -1221,13 +1221,7 @@ function renderMatchDetail(){
       ${splitBar}
     </div>
     <div class="preds-list" style="padding:0 12px">
-      <div style="display:flex;justify-content:flex-end;padding:4px 0 3px">
-        <span style="font-size:9px;color:var(--txt3)">
-          <span style="color:var(--blue);margin-right:6px">■ Local</span>
-          <span style="color:var(--txt2);margin-right:6px">■ Empate</span>
-          <span style="color:var(--amber)">■ Visit.</span>
-        </span>
-      </div>
+
       <table class="preds-tbl">
         <thead>
           <tr>
