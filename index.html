@@ -858,7 +858,7 @@ function populateModals(){
     const tb=m?m.visitante||'TBD':'TBD';
     const o=document.createElement('option');
     o.value=m?m.id:slot.id;
-    o.textContent=`${RONDA_LBL[slot.ronda]||slot.ronda} · ${ta} vs ${tb}${m&&m.hora?` · ${m.hora}`:''}${pl?` (${m.gl}-${m.gv})`:''}`;
+    o.textContent=`${RONDA_LBL[slot.ronda]||slot.ronda}${m&&m.hora?` · ${m.hora}`:''} · ${ta} vs ${tb}${pl?` (${m.gl}-${m.gv})`:''}`;
     ms2.appendChild(o);
   });
   if(prev2&&S.matches.find(m=>m.id===prev2)){ms2.value=prev2;}
@@ -931,7 +931,7 @@ function renderBracket(){
     const ms=S.matches.filter(m=>m.ronda===rnd.key);
     // Unified slot rendering: always render full set of slots per round
     // Map real matches by id for lookup
-    const SLOT_IDS={R32:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],R16:[17,18,19,20,21,22,23,24],QF:[25,26,27,28],SF:[29,30],'3P':[31],F:[32]};
+    const SLOT_IDS={R32:[1,4,2,5,3,6,7,8,10,9,12,11,13,16,15,14],R16:[17,18,19,20,21,22,23,24],QF:[25,26,27,28],SF:[29,30],'3P':[31],F:[32]};
     const slotIds=SLOT_IDS[rnd.key]||[];
     const msById={};ms.forEach(m=>msById[m.id]=m);
     const topN={'R32':0,'R16':3,'QF':5,'SF':5,'3P':5,'F':5}[rnd.key]||0;
@@ -991,7 +991,9 @@ function renderBracket(){
       } else {
         slot.onclick=()=>{const sel=document.getElementById('match-sel');if(sel){sel.value=String(sid);}switchTab('partido',document.getElementById('nav-partido'));renderMatchDetail();};
       }
+      const horaHtml=(m&&m.hora&&rnd.key!=='R32')?`<div style="font-size:8px;color:var(--txt3);padding:2px 8px 0;text-align:right">${m.hora}</div>`:'';
       slot.innerHTML=`
+        ${horaHtml}
         <div class="bslot-row${ganA?' winner-row':''}">
           ${teamA?`<img class="bslot-flag" src="${furl(F[teamA]||'')}" onerror="this.style.display='none'" alt="">`:'<div class="bslot-flag-ph"></div>'}
           <span class="bslot-team${!teamA?' tbd':''}">${teamA?abbr(teamA):'Por definir'}</span>
@@ -1444,6 +1446,7 @@ function renderStats(){
     {key:'R16', label:'Octavos',  matchIds:['17','18','19','20','21','22','23','24']},
     {key:'QF',  label:'Cuartos',  matchIds:['25','26','27','28']},
     {key:'SF',  label:'Semi',     matchIds:['29','30']},
+    {key:'3P',  label:'3er',      matchIds:['31']},
     {key:'F',   label:'Final',    matchIds:['32']},
   ];
 
@@ -1486,7 +1489,7 @@ function renderStats(){
     <th style="background:var(--surface2);color:var(--txt3);font-size:9px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:4px 6px;border-bottom:1px solid var(--border2);text-align:left">Participante</th>
     ${ROUNDS_LIVE.map(r=>`<th style="background:var(--surface2);color:var(--txt3);font-size:9px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:4px 4px;border-bottom:1px solid var(--border2);text-align:center">${r.label}</th>`).join('')}
   </tr>`;
-  const maxPerRound=[8,4,2,1];
+  const maxPerRound=[8,4,2,1,1];
   const liveRows=liveStats.sort((a,b)=>a.rank-b.rank).map((s,i)=>{
     const isMe=s.name===S.me;
     const bg=isMe?'background:rgba(59,130,246,.08)':((i%2===0)?'background:var(--surface)':'background:var(--bg)');
