@@ -991,9 +991,8 @@ function renderBracket(){
       } else {
         slot.onclick=()=>{const sel=document.getElementById('match-sel');if(sel){sel.value=String(sid);}switchTab('partido',document.getElementById('nav-partido'));renderMatchDetail();};
       }
-      // Show hora for R16+ — from real match or static schedule lookup
-      const STATIC_HORA={17:'04 Jul · 12:00',18:'04 Jul · 14:00',19:'04 Jul · 15:00',20:'04 Jul · 20:00',21:'05 Jul · 21:00',22:'05 Jul · 16:00',23:'05 Jul · 17:00',24:'05 Jul · 10:00',25:'09 Jul · 14:00',26:'09 Jul · 16:00',27:'09 Jul · 15:00',28:'10 Jul · 20:00',29:'15 Jul · 14:00',30:'15 Jul · 13:00',31:'19 Jul · 15:00',32:'19 Jul · 13:00'};
-      const hora=(m&&m.hora)||((rnd.key!=='R32')?STATIC_HORA[String(sid)]:'');
+      // Show hora for R16+ — only from real match data in Sheet
+      const hora=(m&&m.hora&&rnd.key!=='R32')?m.hora:'';
       const horaHtml=hora?`<div style="font-size:8px;color:var(--txt3);padding:1px 8px;text-align:right;border-bottom:1px solid var(--border)">${hora}</div>`:'';
       slot.innerHTML=`
         ${horaHtml}
